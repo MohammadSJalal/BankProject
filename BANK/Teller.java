@@ -10,4 +10,7 @@ public class Teller extends Employee {
     public void setSalary(){
         this.salary = BaseSalary;
     }
+    public void agreeWithRequest(){
+
+    }
 }

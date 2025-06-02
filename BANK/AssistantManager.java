@@ -11,4 +11,7 @@ public class AssistantManager extends Employee {
     public void setSalary(){
         salary = 1.5 *BaseSalary;
     }
+    public void agreeWithRequest(){
+
+    }
 }

@@ -9,7 +9,7 @@ public abstract class Employee {
                 10 : 10th hired boss in Bank
      */
     protected final double BaseSalary = 1000.00;
-    private Branch branchWork;
+    protected Branch branchWork;
     public String [] massages;
     public abstract void setSalary();
 }
