@@ -33,22 +33,22 @@ public class Customer extends Person {
     }
 
     public void createAccount(String accountType, double initialBalance, Date openDate) {
-        // شماره حساب باید 13 رقمی و یکتا باشد (در اینجا فرض می‌کنیم تولید یکتا انجام می‌شود)
+        
         String accountNumber = generateUniqueAccountNumber(accountType);
         Account account = new Account(initialBalance, openDate.getYear(), openDate.getMonth(), openDate.getDay());
-        // فرض بر این است که accountNumber در Account ست خواهد شد
+       
         accounts.add(account);
         System.out.println("Account created successfully for customer: " + this.customerId);
     }
 
     public void requestCloseAccount(Account account, Branch branch) {
-        // فرض: ارسال درخواست حذف به شعبه
+    
         inboxMessages.add("Account closure request sent for account number: " + account.getAccountNumber());
         System.out.println("Account closure request sent to branch.");
     }
 
     public void requestLoan(BaseLoan loan, Branch branch) {
-        // فرض: ارسال درخواست وام به تحویل‌دار شعبه
+        
         inboxMessages.add("Loan request submitted: Amount " + loan.getAmount());
         System.out.println("Loan request submitted.");
     }
