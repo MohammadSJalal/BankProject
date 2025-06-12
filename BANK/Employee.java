@@ -1,15 +1,38 @@
 package BANK;
+
+import java.util.ArrayList;
+import java.util.List;
+
+// کلاس پایه برای همه‌ی کارمندای بانک
 public abstract class Employee {
-    protected String employeeIdentity;
-    /*
-    we set id such M as Manager employee and T as Taller employee that we set first letter as first id then
-    two digit for numbering for example :
-        Ma10 -> level : boss
-                branch : 0 or first branch of the Bank
-                10 : 10th hired boss in Bank
-     */
-    protected final double BaseSalary = 1000.00;
-    protected Branch branchWork;
-    public String [] massages;
+    protected String employeeIdentity; // شناسه‌ی منحصربه‌فرد کارمند
+    protected final double BaseSalary = 1000.00; // حقوق پایه
+    protected Branch branchWork; // شعبه‌ای که کارمند توش فعاله
+    protected List<String> messages = new ArrayList<>(); // صندوق پیام کارمند
+
+    // متد انتزاعی برای تنظیم حقوق که باید تو کلاسای فرزند پیاده‌سازی بشه
     public abstract void setSalary();
+
+    public void receiveMessage(String message) {
+        messages.add(message);
+    }
+
+    public void showMessages() {
+        System.out.println("پیام‌های دریافتی کارمند با شناسه: " + employeeIdentity);
+        for (String msg : messages) {
+            System.out.println("- " + msg);
+        }
+    }
+
+    public String getEmployeeIdentity() {
+        return employeeIdentity;
+    }
+
+    public Branch getBranchWork() {
+        return branchWork;
+    }
+
+    public void setBranchWork(Branch branch) {
+        this.branchWork = branch;
+    }
 }
