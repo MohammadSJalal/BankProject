@@ -12,4 +12,12 @@ public abstract class Employee {
     protected Branch branchWork;
     public String [] massages;
     public abstract void setSalary();
+    public String getId(){
+        return employeeIdentity;
+    }
+    /*
+        this function return a boolean value as the result of agreement or
+        disagreement in all classes that override it. function below
+     */
+    public abstract boolean receiveMessage(String idCustomer , String typeRequest);
 }

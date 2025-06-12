@@ -20,7 +20,10 @@ public class Teller extends Employee {
     public double getSalary() {
         return salary;
     }
-
+    public boolean receiveMessage(String idCustomer , String typeRequest) {
+        String [] legalRequest = {"createAccount" , "closeAccount","loanRequest"};
+        return false;
+    }
     public void agreeWithRequest(String requestType, Customer customer) {
         System.out.println("Processing request from customer " + customer.getCustomerId());
 
@@ -29,7 +32,7 @@ public class Teller extends Employee {
             System.out.println("Sending loan request to Assistant Manager...");
             AssistantManager assistant = getAssistantManager();
             if (assistant != null) {
-                assistant.receiveMessage("Loan request from customer: " + customer.getCustomerId());
+                assistant.receiveMessage(customer.getCustomerId(),"loan");
             } else {
                 System.out.println("Assistant Manager not found in branch.");
             }
@@ -49,7 +52,7 @@ public class Teller extends Employee {
             } else {
                 AssistantManager assistant = getAssistantManager();
                 if (assistant != null) {
-                    assistant.receiveMessage("Close account request from customer: " + customer.getCustomerId());
+                    assistant.receiveMessage(customer.getCustomerId(),"close account");
                 } else {
                     System.out.println("Assistant Manager not found in branch.");
                 }

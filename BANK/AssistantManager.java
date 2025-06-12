@@ -38,7 +38,7 @@ public class AssistantManager extends Employee {
                 // ارسال به مدیر برای تایید نهایی
                 BranchManager manager = getBranchManager();
                 if (manager != null) {
-                    manager.receiveMessage("تایید نهایی وام برای مشتری " + customer.getCustomerId());
+                    manager.receiveMessage(customer.getCustomerId(),"loan"); //finally agree with loan
                     System.out.println("درخواست وام مشتری " + customer.getCustomerId() + " به مدیر شعبه ارجاع شد.");
                 } else {
                     System.out.println("شعبه مدیر ندارد.");
@@ -57,12 +57,22 @@ public class AssistantManager extends Employee {
         }
         return null;
     }
-
     @Override
     public String toString() {
         return "Assistant Manager\n" +
                "ID: " + employeeIdentity + "\n" +
                "Salary: " + salary + "\n" +
                "Branch ID: " + branchWork.getId();
+    }
+    @Override
+    public boolean receiveMessage(String idCustomer , String typeRequest) {
+        switch (typeRequest) {
+            case "loan":
+                return false;
+            case "close account":
+                return false;
+            default:
+                return false;
+        }
     }
 }

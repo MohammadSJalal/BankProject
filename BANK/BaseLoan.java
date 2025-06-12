@@ -30,14 +30,7 @@ public abstract class BaseLoan {
      * در این سازنده اطلاعات اصلی وام مقداردهی می‌شوند.
      * برخی چک‌ها برای اطمینان از درستی داده‌ها انجام می‌شود.
      */
-    public BaseLoan(
-        int amount,
-        int durationInMonths,
-        int governmentShare,
-        int customerShare,
-        int penaltyPercent,
-        Customer borrower
-    ) {
+    public BaseLoan( int amount, int durationInMonths, int governmentShare, int customerShare, int penaltyPercent, Customer borrower) {
         if (amount <= 0 || durationInMonths <= 0) {
             throw new IllegalArgumentException("Amount and duration must be positive.");
         }

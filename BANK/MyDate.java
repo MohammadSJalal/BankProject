@@ -1,11 +1,12 @@
 package BANK;
-
-public class Date {
+import java.util.Date;
+import java.util.Calendar;
+public class MyDate {
     private int year;
     private int month;
     private int day;
     private static final int [] daysPerMonth = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    public Date(int year, int month, int day) {
+    public MyDate(int year, int month, int day) {
         if (month < 1 || month > 12)
             throw new IllegalArgumentException("Invalid month");
         if (day < 1 || (day > daysPerMonth[month] && !(month == 2 && day == 29)))
@@ -36,7 +37,7 @@ public class Date {
     public int getDay() {
         return day;
     }
-    public static int calculateSubOfDate(Date date1 ,Date date2) {
+    public static int calculateSubOfDate(MyDate date1 ,MyDate date2) {
         /*
         this function return number of day between two year
         we calculate date2 - date1
@@ -56,6 +57,18 @@ public class Date {
             totalDays += daysPerMonth[i];
         }
         return totalDays;
+    }
+    public static MyDate today(){
+        // Get current date
+        Date date = new Date();
+        // Create calendar instance and set the time
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        // Get day, month, year
+        int day = calendar.get(Calendar.DAY_OF_MONTH);      // 6 for June 6
+        int month = calendar.get(Calendar.MONTH) + 1;       // 6 for June (0-based index)
+        int year = calendar.get(Calendar.YEAR);             // e.g., 2025
+        return new MyDate(year, month, day);
     }
     public String toString() {
         return year + "-" + month + "-" + day;

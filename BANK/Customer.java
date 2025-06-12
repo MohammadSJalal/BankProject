@@ -8,14 +8,18 @@ public class Customer extends Person {
     private String customerId;
     private List<Account> accounts;
     private List<String> inboxMessages;
-
-    public Customer(String name, String familyName, Date birthDate, String nationalCode, String phoneNumber, String address) {
-        super(name, familyName, birthDate, nationalCode, phoneNumber, address);
+    private String nationalCode;
+    private Branch refferalBranch;
+    public Customer(String name,String lastName) {
+        super(name,lastName);
+    }
+    public Customer(String name, String familyName, MyDate birthDate, String nationalCode, String phoneNumber, String address , Branch refferalBranch) {
+        super(name, familyName, birthDate,nationalCode, phoneNumber, address);
         this.customerId = "C" + (++customerCounter);
         this.accounts = new ArrayList<>();
         this.inboxMessages = new ArrayList<>();
+        this.refferalBranch = refferalBranch;
     }
-
     public String getCustomerId() {
         return customerId;
     }
@@ -32,13 +36,14 @@ public class Customer extends Person {
         inboxMessages.add(message);
     }
 
-    public void createAccount(String accountType, double initialBalance, Date openDate) {
+    public void createAccountRequest(String accountType, double initialBalance, MyDate openDate) {
         
         String accountNumber = generateUniqueAccountNumber(accountType);
-        Account account = new Account(initialBalance, openDate.getYear(), openDate.getMonth(), openDate.getDay());
-       
-        accounts.add(account);
-        System.out.println("Account created successfully for customer: " + this.customerId);
+        switch(accountType) {
+            case "Current Account":
+
+
+        }
     }
 
     public void requestCloseAccount(Account account, Branch branch) {
@@ -101,6 +106,11 @@ public class Customer extends Person {
 
     @Override
     public String toString() {
-        return "Customer ID: " + customerId + "\nName: " + name + " " + familyName + "\nNational Code: " + nationalCode;
+        if (refferalBranch != null)
+            return "Customer ID: " + customerId + "\nName: " + name + " " + lastName + "\nNational Code: " + nationalCode+
+                "\nfirst branch visited : Branch name ->" + refferalBranch.getName() +" and branch id is : "+ refferalBranch.getId();
+        else
+            return "Customer ID: " + customerId + "\nName: " + name + " " + lastName + "\nNational Code: " + nationalCode;
+
     }
 }

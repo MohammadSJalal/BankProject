@@ -27,4 +27,19 @@ public class BranchManager extends Employee {
     public void agreeWithRequest(){
 
     }
+    @Override
+    public boolean receiveMessage(String idCustomer , String typeRequest){
+        /*
+        this function return a boolean value as the result of agreement or
+        disagreement in all classes that override it.
+         */
+        switch(typeRequest){
+            case "loan":
+                return false;
+            case "close account":
+                return false;
+            default:
+                return false;
+        }
+    }
 }

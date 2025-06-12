@@ -1,11 +1,9 @@
 import BANK.*;
+import java.util.Date;
 public class Main {
     public static void main(String[] args) {
-        Branch [] branches = new Branch[100];
-        for (int i = 0; i < 100; i++) {
-            branches[i] = new Branch();
-            branches[i].showInformation();
-        }
-
+        Customer saeed = new Customer("mohammad","jalal");
+        Account myAccount = new CurrentAccount(saeed);
+        System.out.println(saeed);
     }
 }

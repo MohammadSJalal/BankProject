@@ -1,4 +1,6 @@
 package BANK;
+import java.util.ArrayList;
+import java.util.regex.*;
 public class Branch {
     public static char counter = 'a';
     public static StringBuilder lastId = new StringBuilder("");
@@ -6,10 +8,45 @@ public class Branch {
     protected String name;
     private BranchManager manager;
     private AssistantManager deputy;
-    protected Employee [] employees;
+    protected ArrayList<Employee> employees;
     public Branch() {
         this.id.append(addACharToLastId(lastId));
+        this.employees = new ArrayList<>();
     }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getName() {
+        return name;
+    }
+    public void getRequest(String request) {
+        /*
+        we save request with format message.date.T mean message for taller
+        */
+        Pattern p = Pattern.compile("^(\\w+),(\\d+),[T|M|A]");
+        Matcher m = p.matcher(request);
+        boolean found = m.find();
+        if (found) {
+            char typeEmployee = request.charAt(request.length()-1);
+            switch (typeEmployee) {
+                case 'A':
+                case 'T':
+
+                case 'M':
+                default:
+            }
+        }
+        else throw new IllegalArgumentException("the request is invalid we must have such format\nmessage,date,A");
+    }
+    /*
+    public Employee foundLessBusyEmployee(String typeOfEmployee) {
+        for (Employee e : employees) {
+            if (e.getId().equals(typeOfEmployee)) {
+
+            }
+        }
+    }
+    */
     public Branch(String name){
         this.name = name;
         this.id.append(addACharToLastId(lastId));
@@ -44,7 +81,7 @@ public class Branch {
     public void showInformation() {
         System.out.println(this);
     }
-    public Employee [] getEmployees() {
+    public ArrayList<Employee> getEmployees() {
         return employees;
     }
 }
