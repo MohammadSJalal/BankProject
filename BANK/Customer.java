@@ -8,6 +8,7 @@ public class Customer extends Person {
     private String customerId;
     private List<Account> accounts;
     private List<String> inboxMessages;
+    private Bank bank;
 
     public Customer(String name, String familyName, Date birthDate, String nationalCode, String phoneNumber, String address) {
         super(name, familyName, birthDate, nationalCode, phoneNumber, address);
@@ -32,75 +33,55 @@ public class Customer extends Person {
         inboxMessages.add(message);
     }
 
-    public void createAccount(String accountType, double initialBalance, Date openDate) {
-        
-        String accountNumber = generateUniqueAccountNumber(accountType);
-        Account account = new Account(initialBalance, openDate.getYear(), openDate.getMonth(), openDate.getDay());
-       
+    public void setBank(Bank bank) {
+        this.bank = bank;
+    }
+
+    public void createAccount(String accountType, int initialBalance) {
+        String prefix = switch (accountType.toLowerCase()) {
+            case "جاری", "jari" -> "01";
+            case "کوتاه", "kootah" -> "02";
+            case "قرض", "gharz" -> "03";
+            default -> throw new IllegalArgumentException("نوع حساب نامعتبر است.");
+        };
+        Account account = new Account(this, initialBalance, prefix);
         accounts.add(account);
-        System.out.println("Account created successfully for customer: " + this.customerId);
+        System.out.println("حساب جدید با شماره " + account.getAccountNumber() + " برای مشتری " + customerId + " ایجاد شد.");
     }
 
-    public void requestCloseAccount(Account account, Branch branch) {
-    
-        inboxMessages.add("Account closure request sent for account number: " + account.getAccountNumber());
-        System.out.println("Account closure request sent to branch.");
-    }
-
-    public void requestLoan(BaseLoan loan, Branch branch) {
-        
-        inboxMessages.add("Loan request submitted: Amount " + loan.getAmount());
-        System.out.println("Loan request submitted.");
-    }
-
-    public void transferMoney(Account from, Account to, double amount) {
+    public void transferMoney(Account from, Account to, int amount) {
         try {
-            if (from.getBalance() >= amount) {
-                from.setBalance(from.getBalance() - amount);
-                to.setBalance(to.getBalance() + amount);
-                System.out.println("Amount " + amount + " transferred from account " + from.getAccountNumber() + " to account " + to.getAccountNumber() + " successfully.");
+            if (accounts.contains(from)) {
+                from.withdraw(amount);
+                to.deposit(amount);
+                System.out.println("مبلغ " + amount + " از حساب " + from.getAccountNumber() + " به حساب " + to.getAccountNumber() + " انتقال یافت.");
             } else {
-                throw new IllegalArgumentException("Insufficient balance.");
+                System.out.println("حساب مبدا متعلق به این مشتری نیست.");
             }
         } catch (Exception e) {
-            System.out.println("Transfer failed: " + e.getMessage());
+            System.out.println("خطا در انتقال: " + e.getMessage());
         }
     }
 
-    public void deposit(Account account, double amount) {
-        if (amount > 0) {
-            account.setBalance(account.getBalance() + amount);
-            System.out.println("Deposited " + amount + " to account " + account.getAccountNumber());
-        }
+    public void deposit(Account account, int amount) {
+        account.deposit(amount);
+        System.out.println("مبلغ " + amount + " به حساب " + account.getAccountNumber() + " واریز شد.");
     }
 
-    public void withdraw(Account account, double amount) {
-        if (amount > 0 && account.getBalance() >= amount) {
-            account.setBalance(account.getBalance() - amount);
-            System.out.println("Withdrawn " + amount + " from account " + account.getAccountNumber());
-        } else {
-            System.out.println("Withdrawal failed. Check amount or balance.");
-        }
+    public void withdraw(Account account, int amount) {
+        account.withdraw(amount);
+        System.out.println("مبلغ " + amount + " از حساب " + account.getAccountNumber() + " برداشت شد.");
     }
 
     public void viewAccounts() {
+        System.out.println("حساب‌های مشتری " + customerId + ":");
         for (Account acc : accounts) {
-            System.out.println("Account: " + acc.getAccountNumber() + " | Balance: " + acc.getBalance());
+            System.out.println(acc);
         }
-    }
-
-    private String generateUniqueAccountNumber(String accountType) {
-        String prefix = switch (accountType.toLowerCase()) {
-            case "jari", "جاری" -> "01";
-            case "kootah", "کوتاه" -> "02";
-            case "gharz", "قرض" -> "03";
-            default -> "00"; // ناشناخته
-        };
-        return prefix + String.format("%011d", System.currentTimeMillis() % 1_000_000_000);
     }
 
     @Override
     public String toString() {
-        return "Customer ID: " + customerId + "\nName: " + name + " " + familyName + "\nNational Code: " + nationalCode;
+        return "Customer ID: " + customerId + ", Name: " + name + " " + familyName + ", National Code: " + nationalCode;
     }
 }
