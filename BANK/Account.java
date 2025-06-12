@@ -1,52 +1,76 @@
 package BANK;
-import java.util.*;
+
 public class Account {
-    public static Scanner input = new Scanner(System.in);
-    private String accountNumber;
-    private double balance;
-    private Date dateOfOpening;
-    public Account(double balance,int year,int month,int day) {
-        this.balance = balance;
+    private static int counter = 1;
+    private final String accountNumber; // شماره حساب یکتا 13 رقمی
+    private int balance; // موجودی حساب
+    private Customer owner; // صاحب حساب
 
-    }
-    public void setBalance(double balance) {
-        String s = "are you kidding me !!";
-        if (balance >= 0) {
-            this.balance = balance;
+    // سازنده برای ساخت حساب جدید
+    public Account(Customer owner, int initialBalance, String typePrefix) {
+        if (initialBalance < 0) {
+            throw new IllegalArgumentException("موجودی اولیه نمی‌تونه منفی باشه.");
         }
-        else throw new IllegalArgumentException("are you kidding me !!! how balance is less than 0 ??");
+        this.accountNumber = generateAccountNumber(typePrefix);
+        this.balance = initialBalance;
+        this.owner = owner;
     }
-    public double getBalance() {
-        return this.balance;
+
+    // تولید شماره حساب یکتا با پیشوند نوع حساب و عدد ترتیبی
+    private String generateAccountNumber(String prefix) {
+        return prefix + String.format("%011d", counter++); // مثلاً 01 + 00000000023
     }
+
     public String getAccountNumber() {
-        return this.accountNumber;
+        return accountNumber;
     }
-    public static Date getDateOfOpening(int year, int month, int day) {
-        Date dateOfOpen = new Date(2025, 5 , 12);
-        try{
-            dateOfOpen.setDate(year, month, day);
-        }
-        catch(IllegalArgumentException illegalArgumentException){
-            System.out.println("sadly the date is incorrect! please enter again");
-            System.out.print("please enter year correctly: ");
-            year = input.nextInt();
-            System.out.print("please enter month correctly: ");
-            month = input.nextInt();
-            System.out.print("please enter day correctly: ");
-            day = input.nextInt();
-            getDateOfOpening(year,month,day);
-        }
-        catch(Exception e){
-            System.out.println("there is a problem with the date of opening that not catch correctly");
-        }
-        return dateOfOpen;
-    }
-    public static void createAccountNumber() {
-        /*
-        we create a account number based :
-            x    xxxx    xxxx    xxxx
 
-         */
+    public int getBalance() {
+        return balance;
+    }
+
+    public void setBalance(int balance) {
+        if (balance < 0) {
+            throw new IllegalArgumentException("موجودی نمی‌تونه منفی باشه.");
+        }
+        this.balance = balance;
+    }
+
+    public Customer getOwner() {
+        return owner;
+    }
+
+    // واریز پول به حساب
+    public void deposit(int amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("مبلغ واریز باید بیشتر از صفر باشه.");
+        }
+        balance += amount;
+    }
+
+    // برداشت پول از حساب
+    public void withdraw(int amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("مبلغ برداشت باید بیشتر از صفر باشه.");
+        }
+        if (amount > balance) {
+            throw new IllegalArgumentException("موجودی کافی نیست.");
+        }
+        balance -= amount;
+    }
+
+    // گرفتن موجودی حساب با کارمزد هزار تومانی
+    public int getBalanceWithFee() {
+        int fee = 1000;
+        if (balance < fee) {
+            throw new IllegalArgumentException("موجودی برای کسر کارمزد کافی نیست.");
+        }
+        balance -= fee;
+        return balance;
+    }
+
+    @Override
+    public String toString() {
+        return "Account Number: " + accountNumber + ", Balance: " + balance + ", Owner: " + owner.getCustomerId();
     }
 }
