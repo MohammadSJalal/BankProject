@@ -1,8 +1,8 @@
- package BANK;
+package BANK;
 
 import java.util.ArrayList; import java.util.HashSet; import java.util.List; import java.util.Set;
 
-public class Bank { private String name; private List<Branch> branches; private List<Customer> customers; private List<Employee> employees; private List<BaseLoan> allLoans; private static Set<String> usedAccountNumbers = new HashSet<>();
+public class Bank { private String name; private List<Branch> branches; private List<Customer> customers; private List<Employee> employees; private List<BaseLoan> allLoans; private static Set<String> usedAccountNumbers = new HashSet<>(); private List<Request> requests; private List<Response> responses;
 
 public Bank(String name) {
     this.name = name;
@@ -10,6 +10,8 @@ public Bank(String name) {
     this.customers = new ArrayList<>();
     this.employees = new ArrayList<>();
     this.allLoans = new ArrayList<>();
+    this.requests = new ArrayList<>();
+    this.responses = new ArrayList<>();
 }
 
 public Branch createBranch(String branchName) {
@@ -28,6 +30,14 @@ public void addLoan(BaseLoan loan) {
     loan.getBorrower().addLoan(loan);
 }
 
+public void addRequest(Request request) {
+    requests.add(request);
+}
+
+public void addResponse(Response response) {
+    responses.add(response);
+}
+
 public List<Branch> getBranches() {
     return branches;
 }
@@ -42,6 +52,14 @@ public List<Employee> getEmployees() {
 
 public void addEmployee(Employee employee) {
     employees.add(employee);
+}
+
+public List<Request> getRequests() {
+    return requests;
+}
+
+public List<Response> getResponses() {
+    return responses;
 }
 
 public void showAllBranchesAndEmployees() {
