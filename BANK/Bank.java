@@ -13,7 +13,8 @@ public class Main {
         Teller teller = new Teller(branch);
 
         while (true) {
-            System.out.println("\n===== سیستم بانکداری =====");
+            System.out.println("\n📅 تاریخ فعلی سیستم: " + TimeManager.getCurrentDate());
+            System.out.println("===== سیستم بانکداری =====");
             System.out.println("1. ثبت مشتری جدید");
             System.out.println("2. ایجاد حساب برای مشتری");
             System.out.println("3. نمایش حساب‌های مشتری");
