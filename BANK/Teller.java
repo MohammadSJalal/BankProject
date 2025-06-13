@@ -5,11 +5,10 @@ public class Teller extends Employee {
     private double salary;
 
     public Teller(Branch branchWork) {
-        super();
         this.branchWork = branchWork;
-        this.employeeIdentity = "T" + branchWork.getId() + counter;
-        counter++;
+        this.employeeIdentity = "T" + branchWork.getId() + counter++;
         setSalary();
+        branchWork.addEmployee(this);
     }
 
     @Override
@@ -21,43 +20,29 @@ public class Teller extends Employee {
         return salary;
     }
 
+    // بررسی درخواست مشتری برای حذف حساب یا وام و ارسال به معاون
     public void agreeWithRequest(String requestType, Customer customer) {
-        System.out.println("Processing request from customer " + customer.getCustomerId());
-
         if (requestType.equalsIgnoreCase("loan")) {
-            // فرض بر صحت اطلاعات ورودی (در عمل احراز هویت مشتری انجام می‌گیره)
-            System.out.println("Sending loan request to Assistant Manager...");
             AssistantManager assistant = getAssistantManager();
             if (assistant != null) {
-                assistant.receiveMessage("Loan request from customer: " + customer.getCustomerId());
+                assistant.receiveMessage("درخواست وام مشتری: " + customer.getCustomerId());
             } else {
-                System.out.println("Assistant Manager not found in branch.");
+                System.out.println("معاون شعبه یافت نشد.");
             }
-        }
-
-        else if (requestType.equalsIgnoreCase("close account")) {
-            boolean hasActiveLoan = false;
-            for (Account acc : customer.getAccounts()) {
-                // اینجا باید بررسی واقعی وجود وام انجام شود
-                // فرض می‌کنیم بررسی شده و وامی نیست
-                hasActiveLoan = false;
-            }
-
-            if (hasActiveLoan) {
+        } else if (requestType.equalsIgnoreCase("close account")) {
+            boolean hasLoan = false; // فرض: بررسی دقیق وام باید در حساب‌ها انجام شه
+            if (hasLoan) {
                 customer.addMessage("درخواست حذف حساب رد شد: دارای وام فعال هستید.");
-                System.out.println("Close account request rejected for customer " + customer.getCustomerId());
             } else {
                 AssistantManager assistant = getAssistantManager();
                 if (assistant != null) {
-                    assistant.receiveMessage("Close account request from customer: " + customer.getCustomerId());
+                    assistant.receiveMessage("درخواست حذف حساب برای مشتری: " + customer.getCustomerId());
                 } else {
-                    System.out.println("Assistant Manager not found in branch.");
+                    System.out.println("معاون شعبه یافت نشد.");
                 }
             }
-        }
-
-        else {
-            System.out.println("Unsupported request type.");
+        } else {
+            System.out.println("نوع درخواست پشتیبانی نمی‌شود.");
         }
     }
 
@@ -72,9 +57,6 @@ public class Teller extends Employee {
 
     @Override
     public String toString() {
-        return "Teller\n" +
-               "ID: " + employeeIdentity + "\n" +
-               "Salary: " + salary + "\n" +
-               "Branch ID: " + branchWork.getId();
+        return "Teller [ID=" + employeeIdentity + ", Salary=" + salary + ", Branch=" + branchWork.getId() + "]";
     }
 }
