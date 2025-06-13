@@ -1,0 +1,37 @@
+package BANK;
+
+public class Request {
+    private static int counter = 0;
+    private final int id;
+    private final String type;
+    private final Customer requester;
+    private final Date requestDate;
+
+    public Request(String type, Customer requester) {
+        this.id = ++counter;
+        this.type = type;
+        this.requester = requester;
+        this.requestDate = TimeManager.getCurrentDate();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public Customer getRequester() {
+        return requester;
+    }
+
+    public Date getRequestDate() {
+        return requestDate;
+    }
+
+    @Override
+    public String toString() {
+        return "Request #" + id + " | Type: " + type + " | From: " + requester.getCustomerId() + " | Date: " + requestDate;
+    }
+}
