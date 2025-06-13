@@ -5,11 +5,10 @@ public class AssistantManager extends Employee {
     private double salary;
 
     public AssistantManager(Branch branchWork) {
-        super();
         this.branchWork = branchWork;
-        this.employeeIdentity = "A" + branchWork.getId() + counter;
-        counter++;
+        this.employeeIdentity = "A" + branchWork.getId() + counter++;
         setSalary();
+        branchWork.addEmployee(this);
     }
 
     @Override
@@ -23,29 +22,15 @@ public class AssistantManager extends Employee {
 
     public void agreeWithRequest(String requestType, Customer customer) {
         if (requestType.equalsIgnoreCase("loan")) {
-            boolean hasActiveLoan = false;
-            for (Account acc : customer.getAccounts()) {
-                // فرض: بررسی وجود وام فعال (نیاز به پیاده‌سازی دقیق‌تر در کلاس Account)
-                // مثلاً acc.hasActiveLoan() == true
-                // فعلاً شبیه‌سازی‌شده:
-                hasActiveLoan = false; // جایگزین با شرط واقعی در صورت نیاز
-            }
-
-            if (hasActiveLoan) {
-                customer.addMessage("وام جدید رد شد: وام فعال دارید.");
-                System.out.println("درخواست وام مشتری " + customer.getCustomerId() + " رد شد (دارای وام فعال).");
+            boolean hasLoan = false;
+            if (hasLoan) {
+                customer.addMessage("درخواست وام رد شد: وام فعال دارید.");
             } else {
-                // ارسال به مدیر برای تایید نهایی
                 BranchManager manager = getBranchManager();
                 if (manager != null) {
-                    manager.receiveMessage("تایید نهایی وام برای مشتری " + customer.getCustomerId());
-                    System.out.println("درخواست وام مشتری " + customer.getCustomerId() + " به مدیر شعبه ارجاع شد.");
-                } else {
-                    System.out.println("شعبه مدیر ندارد.");
+                    manager.receiveMessage("تایید نهایی وام برای مشتری: " + customer.getCustomerId());
                 }
             }
-        } else {
-            System.out.println("نوع درخواست پشتیبانی نمی‌شود.");
         }
     }
 
@@ -60,9 +45,6 @@ public class AssistantManager extends Employee {
 
     @Override
     public String toString() {
-        return "Assistant Manager\n" +
-               "ID: " + employeeIdentity + "\n" +
-               "Salary: " + salary + "\n" +
-               "Branch ID: " + branchWork.getId();
+        return "Assistant Manager [ID=" + employeeIdentity + ", Salary=" + salary + ", Branch=" + branchWork.getId() + "]";
     }
 }
