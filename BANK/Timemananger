@@ -1,0 +1,38 @@
+// CLASS: TimeManager.java package BANK;
+
+public class TimeManager { private static Date currentDate = new Date(2025, 1, 1); // شروع اولیه زمان سیستم
+
+public static Date getCurrentDate() {
+    return currentDate;
+}
+
+public static void skipDays(int days) {
+    for (int i = 0; i < days; i++) {
+        currentDate.incrementDay();
+    }
+    System.out.println("\uD83D\uDD52 زمان به تاریخ: " + currentDate + " منتقل شد.");
+}
+
+public static void skipMonths(int months) {
+    for (int i = 0; i < months; i++) {
+        currentDate.incrementMonth();
+    }
+    System.out.println("\uD83D\uDD52 زمان به تاریخ: " + currentDate + " منتقل شد.");
+}
+
+}
+
+// اضافه به کلاس Date: // (این فرض بر اینه که Date.java قبلاً تعریف شده)
+
+// در کلاس Date اضافه کن: public void incrementDay() { day++; if ((month == 2 && isLeapYear(year) && day > 29) || day > daysPerMonth[month]) { day = 1; month++; if (month > 12) { month = 1; year++; } } }
+
+public void incrementMonth() { month++; if (month > 12) { month = 1; year++; } }
+
+private boolean isLeapYear(int year) { return (year % 400 == 0 || (year % 4 == 0 && year % 100 != 0)); }
+
+// به منوی متنی در Main اضافه کن:
+
+// در لیست منو: System.out.println("8. پیش‌بردن زمان (Time Skip)");
+
+// در switch: case 8 -> { System.out.print("ماه چندم رو جلو ببریم؟ "); int skip = input.nextInt(); input.nextLine(); TimeManager.skipMonths(skip); }
+
