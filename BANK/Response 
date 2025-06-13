@@ -1,0 +1,39 @@
+package BANK;
+
+public class Response {
+    private final Request request;
+    private final boolean approved;
+    private final String message;
+    private final Date responseDate;
+
+    public Response(Request request, boolean approved, String message) {
+        this.request = request;
+        this.approved = approved;
+        this.message = message;
+        this.responseDate = TimeManager.getCurrentDate();
+    }
+
+    public Request getRequest() {
+        return request;
+    }
+
+    public boolean isApproved() {
+        return approved;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public Date getResponseDate() {
+        return responseDate;
+    }
+
+    @Override
+    public String toString() {
+        return "Response to Request #" + request.getId() +
+               " | Status: " + (approved ? "Approved" : "Rejected") +
+               " | Message: " + message +
+               " | Date: " + responseDate;
+    }
+}
