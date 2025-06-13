@@ -12,6 +12,8 @@ public class Customer extends Person {
     private Branch refferalBranch;
     public Customer(String name,String lastName) {
         super(name,lastName);
+        this.customerId = "C" + (++customerCounter);
+        this.inboxMessages = new ArrayList<>();
     }
     public Customer(String name, String familyName, MyDate birthDate, String nationalCode, String phoneNumber, String address , Branch refferalBranch) {
         super(name, familyName, birthDate,nationalCode, phoneNumber, address);
@@ -72,14 +74,13 @@ public class Customer extends Person {
         }
     }
 
-    public void deposit(Account account, double amount) {
-        if (amount > 0) {
-            account.setBalance(account.getBalance() + amount);
-            System.out.println("Deposited " + amount + " to account " + account.getAccountNumber());
-        }
+    public void deposit(double amount,Account account) throws IllegalArgumentException{
+        account.deposit(amount);
     }
 
-    public void withdraw(Account account, double amount) {
+    public void withdraw(Account account, double amount) throws IllegalArgumentException {
+        account.withdraw(amount);
+        System.out.println("Withdrawn : " + amount);
         if (amount > 0 && account.getBalance() >= amount) {
             account.setBalance(account.getBalance() - amount);
             System.out.println("Withdrawn " + amount + " from account " + account.getAccountNumber());
@@ -107,7 +108,7 @@ public class Customer extends Person {
     @Override
     public String toString() {
         if (refferalBranch != null)
-            return "Customer ID: " + customerId + "\nName: " + name + " " + lastName + "\nNational Code: " + nationalCode+
+            return "Customer ID: " + customerId + "\nName: " + name + "\nlast Name: " + lastName + "\nNational Code: " + nationalCode+
                 "\nfirst branch visited : Branch name ->" + refferalBranch.getName() +" and branch id is : "+ refferalBranch.getId();
         else
             return "Customer ID: " + customerId + "\nName: " + name + " " + lastName + "\nNational Code: " + nationalCode;

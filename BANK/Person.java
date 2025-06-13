@@ -21,6 +21,25 @@ public abstract class Person {
         this.address = address;
         this.phone = phone;
     }
+    //get methods
+    public String getName() {
+        return name;
+    }
+    public String getLastName() {
+        return lastName;
+    }
+    public MyDate getBirthDate() {
+        return birthDate;
+    }
+    public String getNationalCode() {
+        return nationalCode;
+    }
+    public String getAddress() {
+        return address;
+    }
+    public String getPhone() {
+        return phone;
+    }
     public String validNameOrLastName(String name){
         for(int i = 0; i < name.length(); i++){
             if(!Character.isLetter(name.charAt(i))) throw new IllegalArgumentException("Name or last name contains invalid characters");

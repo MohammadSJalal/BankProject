@@ -8,13 +8,32 @@ public class Bank {
     private ArrayList<Branch> branches;
     protected ArrayList<Employee> employees;
     protected ArrayList<Customer> customers;
-    Bank(){
+    public Bank(){
         this.branches = new ArrayList<>();
         this.employees = new ArrayList<>();
         this.customers = new ArrayList<>();
     }
+    //get methods
+    public String getBankName() {
+        return bankName;
+    }
+    public ArrayList<Branch> getBranches() {
+        return branches;
+    }
+    public ArrayList<Employee> getEmployees() {
+        return employees;
+    }
+    public ArrayList<Customer> getCustomers() {
+        return customers;
+    }
     public void createBranch(){
         branches.add(new Branch());
+    }
+    public void cteateBranchWithName(String branchName){
+        branches.add(new Branch(branchName));
+    }
+    public void addBranch(Branch branch){
+        this.branches.add(branch);
     }
     public void addEmployee(Employee e){
         employees.add(e);
@@ -49,5 +68,15 @@ public class Bank {
         int month = calendar.get(Calendar.MONTH) + 1;       // 6 for June (0-based index)
         int year = calendar.get(Calendar.YEAR);             // e.g., 2025
         today = new MyDate(year, month, day);
+    }
+    public Account searchAccount(String accountNumber) throws IllegalArgumentException{
+        for (Customer c : customers) {
+            for (Account a : c.getAccounts()) {
+                if (a.getAccountNumber().equals(accountNumber)) {
+                    return a;
+                }
+            }
+        }
+        throw new IllegalArgumentException("it is not a account inside of Bank");
     }
 }
