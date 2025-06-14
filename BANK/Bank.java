@@ -79,7 +79,7 @@ private static void teaBoyMenu() {
 private static void useToilet() {
     toiletUsageCounter++;
     if (toiletUsageCounter >= 3) {
-        System.out.println("🚨 سوء استفاده از دستشویی شناسایی شد! گزارش به مدیر ارسال شد.");
+        System.out.println("🚨 سوء استفاده مالیاتی از دستشویی شناسایی شد! گزارش به مدیر ارسال شد.");
         toiletUsageCounter = 0;
         return;
     }
