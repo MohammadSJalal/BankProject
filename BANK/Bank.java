@@ -1,17 +1,20 @@
 package BANK;
 
-import java.util.ArrayList; import java.util.List; import java.util.Scanner;
+import java.util.ArrayList; import java.util.List; import java.util.Random; import java.util.Scanner;
 
-public class Main { private static List<String> usedAccountNumbers = new ArrayList<>();
+public class Main { private static List<String> usedAccountNumbers = new ArrayList<>(); private static int toiletUsageCounter = 0;
 
 public static void main(String[] args) {
     Scanner input = new Scanner(System.in);
     Bank bank = new Bank("بانک جدی");
 
+    showRandomMotivationalQuote();
+
     while (true) {
         System.out.println("\n🎉 به سیستم مدیریت بانک خوش اومدی!");
         System.out.println("1️⃣ ورود مشتری");
-        System.out.println("2️⃣ خروج ❌");
+        System.out.println("2️⃣ استفاده از پارتی بازی ⏩");
+        System.out.println("3️⃣ خروج ❌");
         System.out.print("انتخاب شما: ");
 
         int choice = input.nextInt();
@@ -19,13 +22,26 @@ public static void main(String[] args) {
 
         switch (choice) {
             case 1 -> customerMenu(input, bank);
-            case 2 -> {
+            case 2 -> timeSkipMenu();
+            case 3 -> {
                 System.out.println("👋 خداحافظ! روز خوبی داشته باشی.");
                 return;
             }
             default -> System.out.println("❌ گزینه نامعتبره! لطفاً عدد درست وارد کن.");
         }
     }
+}
+
+private static void showRandomMotivationalQuote() {
+    String[] quotes = {
+        "💡 امروزت رو با لبخند شروع کن. حتی اگه حسابت خالیه!",
+        "🚀 هیچ وامی بزرگ‌تر از تلاش خودت نیست!",
+        "🌟 موفقیت از پس‌انداز شروع می‌شه، نه از پارتی‌بازی!",
+        "💰 حتی یه ریال هم می‌تونه شروع یه امپراتوری باشه.",
+        "🤝 لبخندت سرمایه‌ی اولته، نگهش دار."
+    };
+    int idx = new Random().nextInt(quotes.length);
+    System.out.println("\n" + quotes[idx]);
 }
 
 private static void customerMenu(Scanner input, Bank bank) {
@@ -61,12 +77,26 @@ private static void teaBoyMenu() {
 }
 
 private static void useToilet() {
+    toiletUsageCounter++;
+    if (toiletUsageCounter >= 3) {
+        System.out.println("🚨 سوء استفاده از دستشویی شناسایی شد! گزارش به مدیر ارسال شد.");
+        toiletUsageCounter = 0;
+        return;
+    }
+
     double chance = Math.random();
     if (chance < 0.3) {
         System.out.println("😳 کسی شما رو دید! شما برای ۲ دقیقه از عملیات بانکی محروم شدید 🚫");
     } else {
         System.out.println("✅ با موفقیت از دستشویی استفاده کردید! امیدواریم سبک شده باشید 😌");
     }
+}
+
+private static void timeSkipMenu() {
+    Scanner input = new Scanner(System.in);
+    System.out.print("⏩ چند ماه جلو بریم؟ ");
+    int skip = input.nextInt();
+    TimeManager.skipMonths(skip);
 }
 
 private static boolean isValidNationalCode(String code) {
