@@ -9,8 +9,7 @@ public abstract class Account{
     private MyDate dateOfOpening;
     private Customer OwnerAccountName;
     private Bank bank;
-    public Account(Customer OwnerAccountName, Bank bank) {
-        dateOfOpening = MyDate.today();
+    public Account(Customer OwnerAccountName, Bank bank ) {
         this.OwnerAccountName = OwnerAccountName;
         this.bank = bank;
         bank.addCustomer(OwnerAccountName); //   here we push customer inside of bank customers

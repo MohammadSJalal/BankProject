@@ -10,10 +10,12 @@ public class Customer extends Person {
     private List<String> inboxMessages;
     private String nationalCode;
     private Branch refferalBranch;
-    public Customer(String name,String lastName) {
+    public Bank bank;
+    public Customer(String name,String lastName,Bank bank) {
         super(name,lastName);
         this.customerId = "C" + (++customerCounter);
         this.inboxMessages = new ArrayList<>();
+        this.bank = bank;
     }
     public Customer(String name, String familyName, MyDate birthDate, String nationalCode, String phoneNumber, String address , Branch refferalBranch) {
         super(name, familyName, birthDate,nationalCode, phoneNumber, address);
@@ -38,24 +40,19 @@ public class Customer extends Person {
         inboxMessages.add(message);
     }
 
-    public void createAccountRequest(String accountType, double initialBalance, MyDate openDate) {
-        
-        String accountNumber = generateUniqueAccountNumber(accountType);
-        switch(accountType) {
-            case "Current Account":
-
-
+    public void createAccountRequest(String accountType, double initialBalance,MyDate d,boolean isBoss) {
+        if (true) { //this have a problem i want to a employee verify to create a card
+            generateUniqueAccountNumber(accountType,d,isBoss);
+            accounts.get(accounts.size() - 1).deposit(initialBalance);
         }
     }
 
     public void requestCloseAccount(Account account, Branch branch) {
-    
         inboxMessages.add("Account closure request sent for account number: " + account.getAccountNumber());
         System.out.println("Account closure request sent to branch.");
     }
 
     public void requestLoan(BaseLoan loan, Branch branch) {
-        
         inboxMessages.add("Loan request submitted: Amount " + loan.getAmount());
         System.out.println("Loan request submitted.");
     }
@@ -81,12 +78,7 @@ public class Customer extends Person {
     public void withdraw(Account account, double amount) throws IllegalArgumentException {
         account.withdraw(amount);
         System.out.println("Withdrawn : " + amount);
-        if (amount > 0 && account.getBalance() >= amount) {
-            account.setBalance(account.getBalance() - amount);
-            System.out.println("Withdrawn " + amount + " from account " + account.getAccountNumber());
-        } else {
-            System.out.println("Withdrawal failed. Check amount or balance.");
-        }
+        System.out.println("Withdrawn " + amount + " from account " + account.getAccountNumber());
     }
 
     public void viewAccounts() {
@@ -95,14 +87,13 @@ public class Customer extends Person {
         }
     }
 
-    private String generateUniqueAccountNumber(String accountType) {
-        String prefix = switch (accountType.toLowerCase()) {
-            case "jari", "جاری" -> "01";
-            case "kootah", "کوتاه" -> "02";
-            case "gharz", "قرض" -> "03";
-            default -> "00"; // ناشناخته
+    private void generateUniqueAccountNumber(String accountType,MyDate d,boolean isBoss) {
+        switch (accountType.toLowerCase()) {
+            case "jari", "جاری" -> accounts.add(new CurrentAccount(this,bank,d,isBoss));
+            case "kootah", "کوتاه" -> accounts.add(new ShortTermSavingAccount(this,bank,d,isBoss));
+            case "gharz", "قرض" -> accounts.add(new CharitableLoan(this,bank,d,isBoss));
+            default -> throw new IllegalArgumentException("not recognized\nthis value for create account is not recognize"); // ناشناخته
         };
-        return prefix + String.format("%011d", System.currentTimeMillis() % 1_000_000_000);
     }
 
     @Override

@@ -2,8 +2,9 @@ package BANK;
 
 public class ShortTermSavingAccount extends Account {
     public static String count = "0000";
-    public ShortTermSavingAccount(Customer ownerAccountName, Bank bank) {
+    public ShortTermSavingAccount(Customer ownerAccountName, Bank bank,MyDate dateOfOpening,boolean isBoss) {
         super(ownerAccountName, bank);
+        this.setDateOfOpening(dateOfOpening,isBoss);
         createAccountNumber();
     }
     public void createAccountNumber() {

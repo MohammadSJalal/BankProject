@@ -3,8 +3,9 @@ package BANK;
 public class CurrentAccount extends Account {
     public static String accountType = "CA";
     public static String count = "0000";
-    public CurrentAccount(Customer ownerAccountName, Bank bank) {
+    public CurrentAccount(Customer ownerAccountName, Bank bank, MyDate dateOfOpening ,boolean isBoss) {
         super(ownerAccountName, bank);
+        this.setDateOfOpening(dateOfOpening,isBoss);
         createAccountNumber();
     }
     public void createAccountNumber() {

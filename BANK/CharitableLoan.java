@@ -2,8 +2,9 @@ package BANK;
 
 public class CharitableLoan extends Account {
     public static String count = "0000";
-    public CharitableLoan(Customer ownerAccountName, Bank bank) {
+    public CharitableLoan(Customer ownerAccountName, Bank bank,MyDate dateOfOpening,boolean isBoss) {
         super(ownerAccountName, bank);
+        this.setDateOfOpening(dateOfOpening,isBoss);
         createAccountNumber();
     }
     public void createAccountNumber(double balance, String ownerAccountName, MyDate dateOfOpening) {
