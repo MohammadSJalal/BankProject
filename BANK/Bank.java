@@ -1,88 +1,96 @@
 package BANK;
 
-import java.util.ArrayList; import java.util.HashSet; import java.util.List; import java.util.Set;
+import java.util.ArrayList; import java.util.List; import java.util.Scanner;
 
-public class Bank { private String name; private List<Branch> branches; private List<Customer> customers; private List<Employee> employees; private List<BaseLoan> allLoans; private static Set<String> usedAccountNumbers = new HashSet<>(); private List<Request> requests; private List<Response> responses;
+public class Main { private static List<String> usedAccountNumbers = new ArrayList<>();
 
-public Bank(String name) {
-    this.name = name;
-    this.branches = new ArrayList<>();
-    this.customers = new ArrayList<>();
-    this.employees = new ArrayList<>();
-    this.allLoans = new ArrayList<>();
-    this.requests = new ArrayList<>();
-    this.responses = new ArrayList<>();
-}
+public static void main(String[] args) {
+    Scanner input = new Scanner(System.in);
+    Bank bank = new Bank("بانک جدی");
 
-public Branch createBranch(String branchName) {
-    Branch branch = new Branch(branchName);
-    branches.add(branch);
-    return branch;
-}
+    while (true) {
+        System.out.println("\n🎉 به سیستم مدیریت بانک خوش اومدی!");
+        System.out.println("1️⃣ ورود مشتری");
+        System.out.println("2️⃣ خروج ❌");
+        System.out.print("انتخاب شما: ");
 
-public void registerCustomer(Customer customer) {
-    customers.add(customer);
-    customer.setBank(this);
-}
+        int choice = input.nextInt();
+        input.nextLine();
 
-public void addLoan(BaseLoan loan) {
-    allLoans.add(loan);
-    loan.getBorrower().addLoan(loan);
-}
-
-public void addRequest(Request request) {
-    requests.add(request);
-}
-
-public void addResponse(Response response) {
-    responses.add(response);
-}
-
-public List<Branch> getBranches() {
-    return branches;
-}
-
-public List<Customer> getCustomers() {
-    return customers;
-}
-
-public List<Employee> getEmployees() {
-    return employees;
-}
-
-public void addEmployee(Employee employee) {
-    employees.add(employee);
-}
-
-public List<Request> getRequests() {
-    return requests;
-}
-
-public List<Response> getResponses() {
-    return responses;
-}
-
-public void showAllBranchesAndEmployees() {
-    for (Branch b : branches) {
-        System.out.println(b);
-        if (b.getEmployees() != null) {
-            for (Employee e : b.getEmployees()) {
-                if (e != null) {
-                    System.out.println("  - " + e);
-                }
+        switch (choice) {
+            case 1 -> customerMenu(input, bank);
+            case 2 -> {
+                System.out.println("👋 خداحافظ! روز خوبی داشته باشی.");
+                return;
             }
+            default -> System.out.println("❌ گزینه نامعتبره! لطفاً عدد درست وارد کن.");
         }
     }
 }
 
-public void showAllCustomers() {
-    for (Customer c : customers) {
-        System.out.println(c);
+private static void customerMenu(Scanner input, Bank bank) {
+    while (true) {
+        System.out.println("\n📱 منوی مشتری:");
+        System.out.println("1️⃣ ایجاد حساب جدید 🆕");
+        System.out.println("2️⃣ انتقال پول 💸");
+        System.out.println("3️⃣ مشاهده پیام‌ها 📬");
+        System.out.println("4️⃣ درخواست چای 🍵");
+        System.out.println("5️⃣ رفتن به دستشویی 🚽");
+        System.out.println("6️⃣ بازگشت 🔙");
+        System.out.print("انتخاب شما: ");
+
+        int choice = input.nextInt();
+        input.nextLine();
+
+        switch (choice) {
+            case 1 -> System.out.println("🆕 ساخت حساب هنوز پیاده‌سازی نشده.");
+            case 2 -> System.out.println("💸 انتقال پول هنوز پیاده‌سازی نشده.");
+            case 3 -> System.out.println("📬 مشاهده پیام‌ها هنوز پیاده‌سازی نشده.");
+            case 4 -> teaBoyMenu();
+            case 5 -> useToilet();
+            case 6 -> {
+                return;
+            }
+            default -> System.out.println("❌ گزینه نامعتبره! لطفاً عدد درست وارد کن.");
+        }
     }
 }
 
+private static void teaBoyMenu() {
+    System.out.println("\n🍵 آبدارچی با یک لبخند گرم چای را تقدیم کرد 😊");
+}
+
+private static void useToilet() {
+    double chance = Math.random();
+    if (chance < 0.3) {
+        System.out.println("😳 کسی شما رو دید! شما برای ۲ دقیقه از عملیات بانکی محروم شدید 🚫");
+    } else {
+        System.out.println("✅ با موفقیت از دستشویی استفاده کردید! امیدواریم سبک شده باشید 😌");
+    }
+}
+
+private static boolean isValidNationalCode(String code) {
+    if (code == null || code.length() != 10) return false;
+    for (char c : code.toCharArray()) {
+        if (!Character.isDigit(c)) return false;
+    }
+    return true;
+}
+
+private static boolean isValidPhoneNumber(String phone) {
+    if (phone == null || phone.length() != 11) return false;
+    if (phone.charAt(0) != '0') return false;
+    for (char c : phone.toCharArray()) {
+        if (!Character.isDigit(c)) return false;
+    }
+    return true;
+}
+
 public static boolean isAccountNumberUsed(String accountNumber) {
-    return usedAccountNumbers.contains(accountNumber);
+    for (String acc : usedAccountNumbers) {
+        if (acc.equals(accountNumber)) return true;
+    }
+    return false;
 }
 
 public static void markAccountNumberUsed(String accountNumber) {
