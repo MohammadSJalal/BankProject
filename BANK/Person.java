@@ -1,13 +1,15 @@
 package BANK;
 import java.util.Date;
 import java.util.regex.*;
-public abstract class Person {
+public abstract class Person implements Message{
     String name = "";
     String lastName = "";
     String nationalCode = "";
     MyDate birthDate;
     String address = "";
     String phone = "";
+    public Person() {
+    }
     public Person(String name, String lastName) {
         this.name = name;
         this.lastName = lastName;
@@ -40,6 +42,32 @@ public abstract class Person {
     public String getPhone() {
         return phone;
     }
+    //set methods
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setBirthDate(MyDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public void setNationalCode(String nationalCode) {
+        this.nationalCode = nationalCode;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String validNameOrLastName(String name){
         for(int i = 0; i < name.length(); i++){
             if(!Character.isLetter(name.charAt(i))) throw new IllegalArgumentException("Name or last name contains invalid characters");
@@ -52,5 +80,18 @@ public abstract class Person {
     public String validPhoneOrNantionalCode(String phone){
         if (!phone.matches("\\d+")) throw new IllegalArgumentException("Phone number contains invalid characters");
         return phone;
+    }
+
+    /**
+     * this function show all information of person
+     * @return a string with all information
+     */
+    public String showAllInformation(){
+        return  "\nname : " + name +
+                "\nlast name : " + lastName+
+                "\nnational code : "+ nationalCode+
+                "\naddress : " + address+
+                "\nphone : " + phone+
+                "\nbirthday : " + birthDate;
     }
 }

@@ -1,16 +1,17 @@
 package BANK;
 
-public class CharitableLoan extends Account {
+public final class CharitableLoanAccount extends Account {
     public static String count = "0000";
-    public CharitableLoan(Customer ownerAccountName, Bank bank,MyDate dateOfOpening,boolean isBoss) {
+    public CharitableLoanAccount(Customer ownerAccountName, Bank bank, MyDate dateOfOpening) {
         super(ownerAccountName, bank);
-        this.setDateOfOpening(dateOfOpening,isBoss);
+        this.setDateOfOpening(dateOfOpening);
         createAccountNumber();
     }
-    public void createAccountNumber(double balance, String ownerAccountName, MyDate dateOfOpening) {
-        setBalance(balance);
+    public CharitableLoanAccount(Customer ownerAccountName, Bank bank, MyDate dateOfOpening, boolean isBoss, double initialBalance) {
+        super(ownerAccountName, bank , initialBalance);
+        this.setDateOfOpening(dateOfOpening);
+        createAccountNumber();
     }
-    @Override
     public void createAccountNumber() {
         // CL is type 3 as first digit of cart
         setAccountNumber("3"+getDateOfOpening().getYear()+createNDigitString(getDateOfOpening().getMonth(),2)+createNDigitString(getDateOfOpening().getDay(),2)+count);

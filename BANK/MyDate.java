@@ -1,7 +1,7 @@
 package BANK;
 import java.util.Date;
 import java.util.Calendar;
-public class MyDate {
+public final class MyDate {
     private int year;
     private int month;
     private int day;

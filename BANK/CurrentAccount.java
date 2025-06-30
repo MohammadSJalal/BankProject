@@ -1,14 +1,19 @@
 package BANK;
 
-public class CurrentAccount extends Account {
+public final class CurrentAccount extends Account {
     public static String accountType = "CA";
     public static String count = "0000";
-    public CurrentAccount(Customer ownerAccountName, Bank bank, MyDate dateOfOpening ,boolean isBoss) {
+    public CurrentAccount(Customer ownerAccountName, Bank bank, MyDate dateOfOpening) {
         super(ownerAccountName, bank);
-        this.setDateOfOpening(dateOfOpening,isBoss);
+        this.setDateOfOpening(dateOfOpening);
         createAccountNumber();
     }
-    public void createAccountNumber() {
+    public CurrentAccount(Customer ownerAccountName, Bank bank, MyDate dateOfOpening , double initialBalance) {
+        super(ownerAccountName, bank , initialBalance);
+        this.setDateOfOpening(dateOfOpening);
+        createAccountNumber();
+    }
+    private void createAccountNumber() {
         // CA is type 1 as first digit of cart
         setAccountNumber("1"+getDateOfOpening().getYear()+createNDigitString(getDateOfOpening().getMonth(),2)+createNDigitString(getDateOfOpening().getDay(),2)+count);
         if (count.equals("9999")) count = "0000";

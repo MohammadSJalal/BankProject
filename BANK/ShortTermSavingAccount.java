@@ -1,13 +1,18 @@
 package BANK;
 
-public class ShortTermSavingAccount extends Account {
+public final class ShortTermSavingAccount extends Account {
     public static String count = "0000";
-    public ShortTermSavingAccount(Customer ownerAccountName, Bank bank,MyDate dateOfOpening,boolean isBoss) {
+    public ShortTermSavingAccount(Customer ownerAccountName, Bank bank,MyDate dateOfOpening) {
         super(ownerAccountName, bank);
-        this.setDateOfOpening(dateOfOpening,isBoss);
+        this.setDateOfOpening(dateOfOpening);
         createAccountNumber();
     }
-    public void createAccountNumber() {
+    public ShortTermSavingAccount(Customer ownerAccountName, Bank bank,MyDate dateOfOpening, double initialBalance) {
+        super(ownerAccountName, bank , initialBalance);
+        this.setDateOfOpening(dateOfOpening);
+        createAccountNumber();
+    }
+    private void createAccountNumber() {
         // STSA is type 2 as first digit of cart
         setAccountNumber("2"+getDateOfOpening().getYear()+createNDigitString(getDateOfOpening().getMonth(),2)+createNDigitString(getDateOfOpening().getDay(),2)+count);
         if (count.equals("9999")) count = "0000";
