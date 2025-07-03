@@ -5,8 +5,8 @@ public final class MyDate {
     private int year;
     private int month;
     private int day;
-    private static final int [] daysPerMonth = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    public MyDate(int year, int month, int day) {
+    public static final int [] daysPerMonth = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    public MyDate(int year, int month, int day) throws IllegalArgumentException {
         if (month < 1 || month > 12)
             throw new IllegalArgumentException("Invalid month");
         if (day < 1 || (day > daysPerMonth[month] && !(month == 2 && day == 29)))
@@ -43,12 +43,12 @@ public final class MyDate {
         we calculate date2 - date1
          */
         int totalDays = 0;
-        totalDays = date1.getDay() - date2.getDay();
+        totalDays = date2.getDay() - date1.getDay();
         if (date1.getMonth() > date2.getMonth()) totalDays -= calculateMonth(date2.getMonth() , date1.getMonth());
         else {
             totalDays += calculateMonth(date2.getMonth() , date1.getMonth());
         }
-        totalDays += (date2.getDay() - date1.getDay()) * 365 + (date2.getMonth() - date1.getMonth()) / 4;
+        totalDays += (date2.getYear() - date1.getYear()) * 365 + (date2.getMonth() - date1.getMonth()) / 4;
         return totalDays;
     }
     public static int calculateMonth(int month1 ,int month2) {

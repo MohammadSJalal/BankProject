@@ -3,27 +3,18 @@ package BANK;
 import java.util.ArrayList;
 
 public final class Teller extends Employee {
-    private static int counter = 0;
     private double salary;
 
     public Teller(Branch branchWork) {
-        super();
-        this.messages = new ArrayList<>();
-        this.branchWork = branchWork;
-        this.branchWork.bank.addEmployee(this);
-        this.branchWork.setEmployeeToList(this);
-        this.employeeIdentity = "T"+ counter;
-        counter++;
+        super(branchWork);
+        this.employeeIdentity =  branchWork.getId()+"T"+ branchWork.bank.tellerCounter++;
+        branchWork.setEmployeeToList(this);
         setSalary();
     }
     public Teller(String name,String lastName, MyDate birthday, String nationalCode , String address, String phoneNumber,Branch branchWork) {
-        super(name , lastName , address , nationalCode ,birthday, phoneNumber);
-        this.messages = new ArrayList<>();
-        this.branchWork = branchWork;
-        this.branchWork.bank.addEmployee(this);
-        this.branchWork.setEmployeeToList(this);
-        this.employeeIdentity = "T" + counter;
-        counter++;
+        super(branchWork,name , lastName , address , nationalCode ,birthday, phoneNumber);
+        this.employeeIdentity =  branchWork.getId() +"T"+ branchWork.bank.tellerCounter++;
+        branchWork.setEmployeeToList(this);
         setSalary();
     }
     //                       **this section is for handle message**
@@ -35,7 +26,7 @@ public final class Teller extends Employee {
      * @throws IndexOutOfBoundsException it can be happened
      */
     @Override
-    public boolean checkMessage() throws IllegalArgumentException , IndexOutOfBoundsException {
+    public void checkMessage() throws IllegalArgumentException , IndexOutOfBoundsException , InvalidRequest {
         Letter lastForm = messages.get(messages.size() - 1);
         switch(lastForm.getMessage()){
             case "01": // 0 as open account and 1 is as current account
@@ -54,12 +45,12 @@ public final class Teller extends Employee {
                 loanRequest(lastForm);
                 break;
             case "21":// it is special loan
-                boolean agree = loanRequest(lastForm);
+                loanRequest(lastForm);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid message in Teller : " + lastForm.getMessage()+" inside of Teller checkMessage");
         }
-        return false;
+        throw new InvalidRequest("request that sent for teller is invalid");
     }
     @Override
     public void deleteMessage(Letter form) {
@@ -110,23 +101,28 @@ public final class Teller extends Employee {
      * @param form this is form that contain all necessary information
      * @return true if taller check all require document and are valid and false other hand
      */
-    public boolean loanRequest(Letter form) throws IllegalArgumentException {
+    public void loanRequest(Letter form) throws IllegalArgumentException {
         if (branchWork.bank.confirmCustomer(form.getSenderId()) && checkAccWithTypeLoan(form.accountNumber,form.typeOfLoan)){
             form.setConfirmEmployee(employeeIdentity," confirm this request ",'A');
             sendMessage(form);
             deleteMessage(form);
         }
-        return false;
+        else if (!branchWork.bank.confirmCustomer(form.getSenderId())) throw new IncorrectID("costumer id is incorrect or bank have not such customer");
+        else if (!checkAccWithTypeLoan(form.accountNumber,form.typeOfLoan)) throw new IllegalArgumentException("this type of "+form.typeOfLoan+" loan has not match with type of account "+form.getAccountNumber().charAt(0));
     }
     public boolean checkAccWithTypeLoan(String accNum, char typeLoan) {
-        if ((accNum.charAt(0) == '1' || accNum.charAt(0) == '2') && typeLoan == '0') return true;
-        else if (accNum.charAt(0) == '3' && typeLoan == '1') return true;
+        char accType = accNum.charAt(0);
+        while (accType > 51) {
+            accType -= 3;
+        }
+        if ((accType == '1'|| accType == '2') && typeLoan == '0') return true;
+        else if (accType == '3' && typeLoan == '1') return true;
         else return false;
     }
 
     @Override
     public String toString() {
-        return "\n\t\tTeller\n" +
+        return "\n\n\t\tTELLER" +
                 showAllInformation() +
                "ID: " + employeeIdentity + "\n" +
                "Salary: " + salary + "\n" +

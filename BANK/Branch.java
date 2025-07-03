@@ -1,31 +1,58 @@
 package BANK;
-import java.util.ArrayList;
-import java.util.regex.*;
-public class Branch extends Bank {
+import java.util.*;
+
+public class Branch {
     public static char counter = 'a';
-    public static StringBuilder lastId = new StringBuilder("");
     private StringBuilder id = new StringBuilder("");
     protected String name;
     protected Bank bank;
     private BranchManager manager;
-    protected ArrayList<AssistantManager> deputy;
-    protected ArrayList<Teller> tellers;
+    public String cardIdentity;
+    protected String eightDigitT1;
+    protected String eightDigitT2;
+    protected String eightDigitT3;
+    int loanCounter;
+    HashMap<String , BaseLoan> loans;
+    protected HashMap<String,AssistantManager> deputy;
+    protected HashMap<String,Teller> tellers;
+    protected HashMap<String,Customer> clients;
     public Branch(Bank bank) {
         this.name = "Branch";
         this.bank = bank;
+        this.id.append(bank.getBankId()+bank.addACharToLastId(bank.branchCounter,'a','z'));
         this.bank.addBranch(this);
-        this.employees = new ArrayList<>();
-        this.deputy = new ArrayList<>();
-        this.tellers = new ArrayList<>();
+        this.deputy = new HashMap<>();
+        this.tellers = new HashMap();
+        this.clients = new HashMap();
+        this.loans = new HashMap<>();
+        this.cardIdentity = Account.createNDigitString(Bank.findIndex(id.toString(),'a','z')-1,4);
+        this.eightDigitT1 = "00000000";
+        this.eightDigitT2 = "00000000";
+        this.eightDigitT3 = "00000000";
+        loanCounter = 0;
     }
     public Branch(Bank bank , String name) {
-        this.name = name;
-        this.id.append(addACharToLastId(lastId));
+        this.name = name + ' ';
         this.bank = bank;
+        this.id.append(bank.getBankId()+bank.addACharToLastId(bank.branchCounter,'a','z'));
         this.bank.addBranch(this);
-        this.employees = new ArrayList<>();
-        this.deputy = new ArrayList<>();
-        this.tellers = new ArrayList<>();
+        this.deputy = new HashMap<>();
+        this.tellers = new HashMap();
+        this.clients = new HashMap();
+        this.loans = new HashMap<>();
+        this.cardIdentity = Account.createNDigitString(Bank.findIndex(id.toString(),'a','z')-1,4);
+        this.eightDigitT1 = "00000000";
+        this.eightDigitT2 = "00000000";
+        this.eightDigitT3 = "00000000";
+        loanCounter = 0;
+    }
+    public static String getIdOfBank(String branchID){
+        StringBuilder id = new StringBuilder(branchID);
+        for (char c : branchID.toCharArray()) {
+            if (c <= 'Z' && c >='A')id.append(c);
+            break;
+        }
+        return id.toString();
     }
     public void setName(String name) {
         this.name = name;
@@ -35,7 +62,9 @@ public class Branch extends Bank {
     public String getName() {
         return name;
     }
-
+    public final Customer getSpecialCustomer(String id) {
+        return clients.get(id);
+    }
     /**
      * this function is for set all employee to data of bank and branch it cause the having all information about it
      * @param employee
@@ -43,16 +72,15 @@ public class Branch extends Bank {
      */
     public final void setEmployeeToList(Employee employee) throws IllegalArgumentException {
         if (employee instanceof Teller){
-            tellers.add((Teller) employee);
+            tellers.put(employee.getId(),(Teller) employee);
         }
         else if (employee instanceof AssistantManager){
-            deputy.add((AssistantManager) employee);
+            deputy.put(employee.getId(),(AssistantManager) employee);
         }
         else if (employee instanceof BranchManager){
             this.manager = (BranchManager) employee;
         }
         else throw new IllegalArgumentException("Employee is not a valid employee to set to array list");
-        this.employees.add(employee);
     }
     /**
      this function convert massage of customer to specify request like :
@@ -73,51 +101,27 @@ public class Branch extends Bank {
                 throw new IllegalArgumentException("something went wrong in searchEmployee in branch");
         }
     }
-    @Override
-    public void addEmployee(Employee employee) {
-        employees.add(employee);
-        switch(employee.getId().charAt(0)) {
+    public final Person getSpecialPerson(String id) throws IncorrectID {
+        switch (Bank.splitID(id).get(2).toString().charAt(0)) {
+            case 'C':
+                return clients.get(id);
             case 'A':
-                deputy.add((AssistantManager) employee)  ;
+                return deputy.get(id);
             case 'T':
-                tellers.add((Teller) employee);
+                return tellers.get(id);
             case 'M':
-                if (manager == null) {
-                    manager = (BranchManager) employee;
-                }
+                return manager;
         }
+        throw new IncorrectID("Incorrect ID");
     }
-
-    /**
-     * this function send a form to another employee
-     * @param typeEmployee
-     * @param letter this is letter or form for another employee
-     * @return true if work correctly
-     * @throws IllegalArgumentException if not match with typeEmployee
-     */
-    public final boolean sendToEmployee(char typeEmployee , Letter letter) throws IllegalArgumentException {
-        //there is a problem with return because inside of function we throw or return it is uncostomed
-        switch(typeEmployee) {
-            case 'A':
-                foundLessBusyDeputy().receiveMessage(letter);
-                return true;
-            case 'T':
-                foundLessBusyTaller().receiveMessage(letter);
-                return true;
-            case 'M':
-                if (manager == null) {
-                    throw new IllegalArgumentException("seems like you are trying to access a manager but we haven't manager");
-                }
-                manager.receiveMessage(letter);
-                return true;
-            default:
-                throw new IllegalArgumentException("there are problem with type employee");
-        }
+    public static String findID(String id){
+        return Bank.splitID(id).get(0).toString()+Bank.splitID(id).get(1).toString();
     }
-    public Teller foundLessBusyTaller() throws IllegalArgumentException {
+    public final Teller foundLessBusyTaller() throws IllegalArgumentException {
         // it is work correctly
         ArrayList<Teller> lessBusyTeller = new ArrayList<>();
-        for (Teller e : tellers) {
+        for (Teller e : tellers.values()) {
+            if (e.workLoad() == 0) return e;
             if (lessBusyTeller.size() == 0) lessBusyTeller.add(e);
             else if (lessBusyTeller.get(0).workLoad() > e.workLoad() ){
                 lessBusyTeller.removeFirst();
@@ -126,10 +130,10 @@ public class Branch extends Bank {
         }
         return lessBusyTeller.get(0);
     }
-    public AssistantManager foundLessBusyDeputy() throws IllegalArgumentException {
+    public final AssistantManager foundLessBusyDeputy() throws IllegalArgumentException {
         // it is work correctly
         ArrayList<AssistantManager> lessBusyDeputy = new ArrayList<>();
-        for (AssistantManager e : deputy) {
+        for (AssistantManager e : deputy.values()) {
             if (lessBusyDeputy.size() == 0) lessBusyDeputy.add(e);
             else if (lessBusyDeputy.get(0).workLoad() > e.workLoad() ){
                 lessBusyDeputy.removeFirst();
@@ -138,31 +142,52 @@ public class Branch extends Bank {
         }
         return lessBusyDeputy.get(0);
     }
-    public static StringBuilder addACharToLastId(StringBuilder subId) {
-        if (subId.length() == 0) {
-            return subId.append('a');
-        }
-        char lastChar = subId.charAt(subId.length() - 1);
-        subId.deleteCharAt(lastId.length() - 1);
-        if (lastChar == 'z') {
-            return addACharToLastId(subId).append("a");
-        }
-        else {
-            lastChar++;
-            subId.append(lastChar);
-        }
-        return subId;
-    }
-    public String getDeputy(){
+    public String getDeputyInfo(){
         StringBuilder deputys = new StringBuilder();
-        for (AssistantManager e : deputy) {
+        for (AssistantManager e : deputy.values()) {
             deputys.append(e.toString());
         }
         return deputys.toString();
     }
-    public String getTellers(){
+    public HashMap<String , AssistantManager> getDeputy(){
+        return deputy;
+    }
+    public HashMap<String , Teller> getTellers(){
+        return tellers;
+    }
+    public final String getEightDigits(char firstDigit , ArrayList<Account> accounts)throws IllegalArgumentException {
+        if (firstDigit >= '1' && firstDigit <= '3') {
+            String temp;
+            switch (firstDigit) {
+                case '1':
+                    temp = eightDigitT1;
+                    eightDigitT1 = Bank.addString(eightDigitT2);
+                    return temp;
+                case '2':
+                    temp = eightDigitT2;
+                    eightDigitT2 = Bank.addString(eightDigitT3);
+                    return temp;
+                case '3':
+                    temp = eightDigitT3;
+                    eightDigitT3 = Bank.addString(eightDigitT1);
+                    return temp;
+            }
+        }
+        else { //im here **
+            switch (firstDigit) {
+                case '4','7':
+                    return Account.searchAccount(accounts,'1').getAccountNumber().substring(8);
+                case '5','8':
+                    return Account.searchAccount(accounts,'2').getAccountNumber().substring(8);
+                case '6','9':
+                    return Account.searchAccount(accounts,'3').getAccountNumber().substring(8);
+            }
+        }
+        throw new IllegalArgumentException("something went wrong in given first digit");
+    }
+    public final String getTellersInfo() {
         StringBuilder tl = new StringBuilder();
-        for(Teller t : tellers){
+        for(Teller t : tellers.values()) {
             tl.append(t.toString());
         }
         return tl.toString();
@@ -170,13 +195,35 @@ public class Branch extends Bank {
     public String getId() {
         return id.toString();
     }
+    /** this function check the id of branch is valid or not*/
+    public static boolean validID(String id){
+        StringBuilder idOfBank = new StringBuilder();
+        boolean continued = true;
+        for (char i : id.toCharArray()) {
+            if (i >= 'A' && i <= 'Z' && continued) idOfBank.append(i);
+            if (i>='a' && i<='z') continued = false;
+            else return false;
+        }
+        if (Bank.getBank(idOfBank.toString()) == null) throw new IncorrectID("Incorrect ID");
+        return true;
+    }
+    public static String decorator(String text) {
+        String a = "--------------------------------------------------";
+        return "\n" + a + "\n" + text + "\n" + a + "\n";
+    }
     @Override
     public String toString() {
         if (this.name.equals("")) {
-            return "\nbranch id : " + id+"\nbank : " + bank +"\nlast id : "+lastId+"\n\t\t All employee"+ manager + getDeputy() + getTellers() ;
+            return decorator("\nbranch id : " + id+
+                    "\nbank : " + bank +"\nlast id : "+
+                    bank.branchCounter+"\n\t\t All employee"+
+                    manager + getDeputyInfo() + getTellersInfo()) ;
         }
         else {
-            return "\nname of branch " + name + "\n branch id :"+ id+"\nbank name: "+ bank.getBankName() + manager + getDeputy() + getTellers()  ;
+            return decorator("\nname of branch "
+                    + name + "\n branch id :"+ id+"\nbank name: "+
+                    bank.getBankName() + manager + getDeputyInfo() +
+                    getTellersInfo())  ;
         }
     }
 

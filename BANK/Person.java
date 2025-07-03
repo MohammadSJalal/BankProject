@@ -81,6 +81,9 @@ public abstract class Person implements Message{
         if (!phone.matches("\\d+")) throw new IllegalArgumentException("Phone number contains invalid characters");
         return phone;
     }
+    public static String decorator(String str){
+        return "\n----------\n"+str+"\n----------\n";
+    }
 
     /**
      * this function show all information of person

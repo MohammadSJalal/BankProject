@@ -7,6 +7,7 @@ public final class Letter {
 
 
     //this is public for all letter
+    private String subject;
     private String senderId ;
     private char receiverType ;
     private String message ;
@@ -21,6 +22,9 @@ public final class Letter {
     protected String accountNumber;
     public int duration;
     public double amount;
+    //these must be append after base work for loan is complete
+    public Customer Guarantor;
+    public Customer CoSigner;
     /** 0 for normal and 1 for specific is value that inserted inside of variable*/
     protected char typeOfLoan;
     /**this is for employee that confirm and request get go up for advanced employee*/
@@ -32,6 +36,7 @@ public final class Letter {
      * this constractor is for open account
      */
     public Letter(String senderId , String message , MyDate dateOfMessage , Branch branch, String typeOfAccount) {
+        this.subject = "requestOA";
         this.senderId = senderId;
         this.message = message;
         this.dateOfMessage = dateOfMessage;
@@ -41,6 +46,7 @@ public final class Letter {
     }
     public Letter(String senderId , String message , MyDate dateOfMessage , Branch branch , String typeOfAccount, double initialBalance) {
         this.senderId = senderId;
+        this.subject = "requestOA";
         this.message = message;
         this.dateOfMessage = dateOfMessage;
         this.typeOfAccount = typeOfAccount;
@@ -53,6 +59,7 @@ public final class Letter {
      */
     public Letter(String senderId, String message , MyDate dateOfMessage , Branch branch , int index) {
         this.senderId = senderId;
+        this.subject = "requestCA";
         this.message = message;
         this.dateOfMessage = dateOfMessage;
         this.branch = branch;
@@ -64,6 +71,7 @@ public final class Letter {
      */
     public Letter(String senderId , String message , MyDate dateOfMessage , Branch branch , String accountNumber, int duration, double amount, char typeOfLoan) {
         this.senderId = senderId;
+        this.subject = "requestL";
         this.message = message;
         this.dateOfMessage = dateOfMessage;
         this.branch = branch;
@@ -73,17 +81,23 @@ public final class Letter {
         setAmount(amount);
         this.letterIsSafe = true;
     }
+    /** notice for loan that sent by bank*/
+    public Letter(String text , MyDate dateOfMessage) {
+        this.subject = "notice";
+        this.message = text;
+        this.dateOfMessage = dateOfMessage;
+    }
     /**this constractor is for test*/
     public Letter(){ this.letterIsSafe = false; };
 
 
     //              set functions           //
 
-
     public void setDateOfMessage(MyDate dateOfMessage) {
         this.dateOfMessage = dateOfMessage;
     }
     public void setMessage(String message) {
+        this.setDateOfMessage(Bank.getToday());
         this.message = message;
     }
     /** this function have a patter for write just give confirm
@@ -131,7 +145,7 @@ public final class Letter {
         this.amount = amount;
     }
     public void setAccountNumber(String accountNumber) {
-        if (accountNumber.length() != 13) throw new IllegalArgumentException("Account number must be 13 characters in length");
+        if (accountNumber.length() != 16) throw new IllegalArgumentException("Account number must be 13 characters in length");
         this.accountNumber = accountNumber;
     }
     public final void setInitialBalance(double initialBalance) {
@@ -149,6 +163,7 @@ public final class Letter {
     public String getAccountNumber() {
         return accountNumber;
     }
+    public String getSubject() {return subject;}
     public Person getSender() {
         char typeOfPerson = senderId.charAt(0);
         switch(typeOfPerson){
@@ -186,7 +201,7 @@ public final class Letter {
     public double getInitialBalance() {return initialBalance;}
 
     public String toString (){
-        return "\t\t\t form\t\t\t\nsender : "+"\ndate of message : "+dateOfMessage+"sender id : " + senderId +"to (sir / miss) employee : "+receiverType+ "\nmessage : " + message + "employee confirm and notation : "+
+        return "\t\t\t form\nsender : "+"\ndate of message : "+dateOfMessage+"sender id : " + senderId +"to (sir / miss) employee : "+receiverType+ "\nmessage : " + message + "employee confirm and notation : "+
                 getConfirmEmployee();
     }
 }

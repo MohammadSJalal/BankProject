@@ -7,6 +7,8 @@ public interface Message {
      */
     void sendMessage(Letter form);
     void receiveMessage(Letter form);
-    boolean checkMessage();
+    void checkMessage();
+    void showMessage();
     void deleteMessage(Letter form);
+    Letter searchLetter(String subject);
 }

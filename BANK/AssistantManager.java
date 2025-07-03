@@ -3,27 +3,18 @@ package BANK;
 import java.util.ArrayList;
 
 public final class AssistantManager extends Employee {
-    private static int counter = 0;
     private double salary;
 
     public AssistantManager(Branch branchWork) {
-        super();
-        this.messages = new ArrayList<>();
-        this.branchWork = branchWork;
-        this.branchWork.bank.addEmployee(this);
-        this.branchWork.setEmployeeToList(this);
-        this.employeeIdentity = "A" + counter;
-        counter++;
+        super(branchWork);
+        this.employeeIdentity =  branchWork.getId()+"A" + branchWork.bank.assistantCounter++;
+        branchWork.setEmployeeToList(this);
         setSalary();
     }
     public AssistantManager(String name,String lastName, MyDate birthday, String nationalCode , String address, String phoneNumber,Branch branchWork) {
-        super(name , lastName , address , nationalCode ,birthday, phoneNumber);
-        this.messages = new ArrayList<>();
-        this.branchWork = branchWork;
-        this.branchWork.bank.addEmployee(this);
-        this.branchWork.setEmployeeToList(this);
-        this.employeeIdentity = "A"+  counter;
-        counter++;
+        super(branchWork,name , lastName , address , nationalCode ,birthday, phoneNumber);
+        this.employeeIdentity =  branchWork.getId()+"A"+  branchWork.bank.assistantCounter++;
+        branchWork.setEmployeeToList(this);
         setSalary();
     }
     @Override
@@ -34,29 +25,19 @@ public final class AssistantManager extends Employee {
     public double getSalary() {
         return salary;
     }
-
-
-    private BranchManager getBranchManager() {
-        for (Employee e : branchWork.getEmployees()) {
-            if (e instanceof BranchManager) {
-                return (BranchManager) e;
-            }
-        }
-        return null;
-    }
     //          message implementation part
     @Override
-    public boolean checkMessage() {
+    public void checkMessage() {
         Letter form = messages.get(messages.size() - 1);
-        for (Account i : branchWork.bank.findCustomer(form.getSenderId()).getAccounts()) {
+        for (Account i : ((Customer)Bank.find(form.getSenderId())).getAccounts()) {
             if (i.getHaveLoan(employeeIdentity.charAt(0))){
                 form.setConfirmEmployee(employeeIdentity, "refuse this request you have current loan", 'C');
                 sendMessage(form);
                 deleteMessage(form);
-                return false;
             }
         }
-        return true;
+        form.setConfirmEmployee(employeeIdentity,"customer have not any loan and they request is acceptable for this stage",'M');
+        sendMessage(form);
     }
     @Override
     public void deleteMessage(Letter form) {
@@ -69,13 +50,13 @@ public final class AssistantManager extends Employee {
     @Override
     public String toString() {
         if (name.equals("")) {
-            return "\t\tAssistant Manager\n" +
+            return "\n\n\t\tASSISTANT MANAGER\n" +
                     "ID: " + employeeIdentity + "\n" +
                     "Salary: " + salary + "\n" +
                     "Branch ID: " + branchWork.getId();
         }
         else {
-            return "\n\t\tAssistant Manager \n" +
+            return "\n\n\t\tASSISTANT MANAGER\n" +
                     showAllInformation() +
                     "\nsalary : " + salary +
                     "\nbranch ID : " + branchWork.getId();
