@@ -6,6 +6,5 @@ public class Main {
             branches[i] = new Branch();
             branches[i].showInformation();
         }
-
     }
 }
