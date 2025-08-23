@@ -1,5 +1,3 @@
-package BANK;
-
 public class NormalLoan extends BaseLoan {
     public NormalLoan(int amount, int durationInMonths, Customer borrower) {
         super(amount, durationInMonths, 40, 60, 6, borrower);
