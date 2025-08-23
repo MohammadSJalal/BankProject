@@ -1,4 +1,3 @@
-package BANK;
 
 public class FacilityLoan extends BaseLoan {
     public FacilityLoan(int amount, int durationInMonths, Customer borrower) {
