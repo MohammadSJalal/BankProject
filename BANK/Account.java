@@ -22,39 +22,18 @@ public class Account {
         return accNum;
     }
 
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    public int getBalance() {
-        return balance;
-    }
-
-    public void setBalance(int balance) {
-        if (balance < 0) {
-            throw new IllegalArgumentException("موجودی نمی‌تونه منفی باشه.");
-        }
-        this.balance = balance;
-    }
-
-    public Customer getOwner() {
-        return owner;
-    }
+    public String getAccountNumber() { return accountNumber; }
+    public int getBalance() { return balance; }
+    public Customer getOwner() { return owner; }
 
     public void deposit(int amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("مبلغ واریز باید بیشتر از صفر باشه.");
-        }
+        if (amount <= 0) throw new IllegalArgumentException("مبلغ واریز باید بیشتر از صفر باشه.");
         balance += amount;
     }
 
     public void withdraw(int amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("مبلغ برداشت باید بیشتر از صفر باشه.");
-        }
-        if (amount > balance) {
-            throw new IllegalArgumentException("موجودی کافی نیست.");
-        }
+        if (amount <= 0) throw new IllegalArgumentException("مبلغ برداشت باید بیشتر از صفر باشه.");
+        if (amount > balance) throw new IllegalArgumentException("موجودی کافی نیست.");
         balance -= amount;
     }
 
@@ -69,6 +48,8 @@ public class Account {
 
     @Override
     public String toString() {
-        return "Account Number: " + accountNumber + ", Balance: " + balance + ", Owner: " + owner.getCustomerId();
+        return "Account Number: " + accountNumber +
+                ", Balance: " + balance +
+                ", Owner: " + owner.getCustomerId();
     }
 }
