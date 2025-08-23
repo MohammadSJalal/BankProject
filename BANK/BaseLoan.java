@@ -1,5 +1,3 @@
-package BANK;
-
 public abstract class BaseLoan {
     protected int amount;
     protected int durationInMonths;
@@ -26,28 +24,17 @@ public abstract class BaseLoan {
         this.borrower = borrower;
     }
 
-    public int getAmount() {
-        return amount;
-    }
-
-    public int getDurationInMonths() {
-        return durationInMonths;
-    }
-
-    public int getPenaltyPercent() {
-        return penaltyPercent;
-    }
-
-    public Customer getBorrower() {
-        return borrower;
-    }
+    public int getAmount() { return amount; }
+    public int getDurationInMonths() { return durationInMonths; }
+    public int getPenaltyPercent() { return penaltyPercent; }
+    public Customer getBorrower() { return borrower; }
 
     public abstract void calculatePenalty(int delayedMonths);
-
     public abstract String getLoanType();
 
     @Override
     public String toString() {
-        return "Loan Type: " + getLoanType() + ", Amount: " + amount + ", Duration: " + durationInMonths + " months, Borrower: " + borrower.getCustomerId();
+        return "Loan Type: " + getLoanType() + ", Amount: " + amount +
+                ", Duration: " + durationInMonths + " months, Borrower: " + borrower.getCustomerId();
     }
 }
