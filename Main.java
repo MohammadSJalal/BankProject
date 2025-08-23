@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         Bank bank = new Bank("بانک جدی");
-        BankSystemHolder.setBank(bank); // رجیستر بانک در هولدر
+        BankSystemHolder.setBank(bank); 
 
         showRandomMotivationalQuote();
 
