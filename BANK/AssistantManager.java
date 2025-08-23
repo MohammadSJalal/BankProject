@@ -1,81 +1,60 @@
-import java.util.ArrayList;
-import java.util.List;
+public class AssistantManager extends Employee {
+    private static int counter = 0;
+    private double salary;
 
-public class Bank {
-    private String name;
-    private List<Customer> customers;
-    private List<Employee> employees;
-    private List<BaseLoan> loans;
-    private List<Request> requests;
-    private List<Response> responses;
-
-    private static List<String> usedAccountNumbers = new ArrayList<>();
-
-    public Bank(String name) {
-        this.name = name;
-        this.customers = new ArrayList<>();
-        this.employees = new ArrayList<>();
-        this.loans = new ArrayList<>();
-        this.requests = new ArrayList<>();
-        this.responses = new ArrayList<>();
+    public AssistantManager(Branch branchWork) {
+        this.branchWork = branchWork;
+        this.employeeIdentity = "A" + branchWork.getId() + counter++;
+        setSalary();
+        branchWork.addEmployee(this);
     }
 
-    public String getName() { return name; }
-
-    public void addCustomer(Customer customer) {
-        customer.setBank(this);
-        customers.add(customer);
+    @Override
+    public void setSalary() {
+        this.salary = 1.5 * BaseSalary;
     }
 
-    public void addEmployee(Employee employee) { employees.add(employee); }
-    public void addLoan(BaseLoan loan) { loans.add(loan); }
-    public void addRequest(Request request) { requests.add(request); }
-    public void addResponse(Response response) { responses.add(response); }
+    public double getSalary() {
+        return salary;
+    }
 
-    public List<Customer> getCustomers() { return customers; }
-    public List<Employee> getEmployees() { return employees; }
-    public List<BaseLoan> getLoans() { return loans; }
-    public List<Request> getRequests() { return requests; }
-    public List<Response> getResponses() { return responses; }
-    
-    public static Account findAccount(String accountNumber) {
-        for (Customer c : BankSystemHolder.getBank().getCustomers()) {
-            for (Account a : c.getAccounts()) {
-                if (a.getAccountNumber().equals(accountNumber)) {
-                    return a;
-                }
+    public void agreeWithRequest(String requestType, Customer customer) {
+        if (requestType.equalsIgnoreCase("loan")) {
+            if (customer.hasActiveLoan()) {
+                customer.addMessage("درخواست وام رد شد: شما دارای وام فعال هستید.");
+                return;
+            }
+            BranchManager manager = getBranchManager();
+            if (manager != null) {
+                manager.receiveMessage("تایید نهایی وام برای مشتری: " + customer.getCustomerId());
+                Request req = new Request("loan final approval", customer);
+                customer.getBank().addRequest(req);
+            } else {
+                customer.addMessage("مدیر شعبه یافت نشد. درخواست تایید نشد.");
+            }
+        } else if (requestType.equalsIgnoreCase("close account")) {
+            BranchManager manager = getBranchManager();
+            if (manager != null) {
+                manager.receiveMessage("تایید نهایی حذف حساب مشتری: " + customer.getCustomerId());
+                Request req = new Request("close account final approval", customer);
+                customer.getBank().addRequest(req);
+            } else {
+                customer.addMessage("مدیر شعبه یافت نشد. درخواست حذف حساب تایید نشد.");
+            }
+        }
+    }
+
+    private BranchManager getBranchManager() {
+        for (Employee e : branchWork.getEmployees()) {
+            if (e instanceof BranchManager) {
+                return (BranchManager) e;
             }
         }
         return null;
     }
 
-    public static boolean isAccountNumberUsed(String accountNumber) {
-        return usedAccountNumbers.contains(accountNumber);
-    }
-
-    public static void markAccountNumberUsed(String accountNumber) {
-        usedAccountNumbers.add(accountNumber);
-    }
-
-    public void showCustomers() {
-        System.out.println("👥 لیست مشتریان:");
-        for (Customer c : customers) {
-            System.out.println(c);
-        }
-    }
-
-    public void showBranchesAndEmployees() {
-        System.out.println("🏢 لیست کارمندان بانک:");
-        for (Employee e : employees) {
-            System.out.println(e);
-        }
-    }
-
     @Override
     public String toString() {
-        return "Bank: " + name +
-                " | Customers: " + customers.size() +
-                " | Employees: " + employees.size() +
-                " | Loans: " + loans.size();
+        return "Assistant Manager [ID=" + employeeIdentity + ", Salary=" + salary + ", Branch=" + branchWork.getId() + "]";
     }
 }
