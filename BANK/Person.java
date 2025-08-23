@@ -1,7 +1,3 @@
-package BANK;
-
-import java.util.regex.Pattern;
-
 public abstract class Person {
     protected String name;
     protected String familyName;
@@ -12,7 +8,7 @@ public abstract class Person {
 
     public Person(String name, String familyName, Date birthDate, String nationalCode, String phoneNumber, String address) {
         if (!isValidNationalCode(nationalCode)) {
-            throw new IllegalArgumentException("کد ملی باید 10 رقمی و یکتا باشد.");
+            throw new IllegalArgumentException("کد ملی باید 10 رقمی باشد.");
         }
         if (!isValidPhoneNumber(phoneNumber)) {
             throw new IllegalArgumentException("شماره تلفن همراه باید 11 رقمی و با صفر شروع شود.");
@@ -27,43 +23,35 @@ public abstract class Person {
     }
 
     private boolean isValidNationalCode(String code) {
-        return code != null && code.matches("\\d{10}");
+        if (code == null || code.length() != 10) return false;
+        for (char c : code.toCharArray()) {
+            if (!Character.isDigit(c)) return false;
+        }
+        return true;
     }
 
     private boolean isValidPhoneNumber(String phone) {
-        return phone != null && phone.matches("0\\d{10}");
+        if (phone == null || phone.length() != 11) return false;
+        if (phone.charAt(0) != '0') return false;
+        for (char c : phone.toCharArray()) {
+            if (!Character.isDigit(c)) return false;
+        }
+        return true;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getFamilyName() {
-        return familyName;
-    }
-
-    public Date getBirthDate() {
-        return birthDate;
-    }
-
-    public String getNationalCode() {
-        return nationalCode;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getAddress() {
-        return address;
-    }
+    public String getName() { return name; }
+    public String getFamilyName() { return familyName; }
+    public Date getBirthDate() { return birthDate; }
+    public String getNationalCode() { return nationalCode; }
+    public String getPhoneNumber() { return phoneNumber; }
+    public String getAddress() { return address; }
 
     @Override
     public String toString() {
         return "Name: " + name + " " + familyName + "\n" +
-               "Birth Date: " + birthDate + "\n" +
-               "National Code: " + nationalCode + "\n" +
-               "Phone: " + phoneNumber + "\n" +
-               "Address: " + address;
+                "Birth Date: " + birthDate + "\n" +
+                "National Code: " + nationalCode + "\n" +
+                "Phone: " + phoneNumber + "\n" +
+                "Address: " + address;
     }
 }
