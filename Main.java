@@ -7,7 +7,13 @@ public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         Bank bank = new Bank("بانک جدی");
-        BankSystemHolder.setBank(bank); 
+        BankSystemHolder.setBank(bank);
+
+
+        Branch mainBranch = new Branch("Tehran");
+        BranchManager bm = new BranchManager(mainBranch);
+        AssistantManager am = new AssistantManager(mainBranch);
+        bank.addBranch(mainBranch);
 
         showRandomMotivationalQuote();
 
@@ -18,7 +24,8 @@ public class Main {
             System.out.println("3️⃣ نمایش شعب و کارمندان 🏢");
             System.out.println("4️⃣ نمایش مشتریان 👥");
             System.out.println("5️⃣ جلو بردن زمان 📅");
-            System.out.println("6️⃣ خروج ❌");
+            System.out.println("6️⃣ ورود مدیر شعبه 👔");
+            System.out.println("7️⃣ خروج ❌");
             System.out.print("انتخاب شما: ");
 
             int choice = input.nextInt();
@@ -30,7 +37,8 @@ public class Main {
                 case 3 -> bank.showBranchesAndEmployees();
                 case 4 -> bank.showCustomers();
                 case 5 -> timeSkipMenu(input);
-                case 6 -> {
+                case 6 -> managerMenu(input, bank);
+                case 7 -> {
                     System.out.println("👋 خداحافظ! روز خوبی داشته باشی.");
                     return;
                 }
@@ -38,6 +46,7 @@ public class Main {
             }
         }
     }
+
 
     private static void showRandomMotivationalQuote() {
         String[] quotes = {
@@ -50,6 +59,7 @@ public class Main {
         int idx = new Random().nextInt(quotes.length);
         System.out.println("\n" + quotes[idx]);
     }
+
 
     private static void loginCustomer(Scanner input, Bank bank) {
         System.out.print("کد ملی مشتری رو وارد کن: ");
@@ -69,6 +79,7 @@ public class Main {
             System.out.println("❌ مشتری با این کد ملی یافت نشد.");
         }
     }
+
 
     private static void createCustomer(Scanner input, Bank bank) {
         System.out.print("نام: ");
@@ -103,6 +114,7 @@ public class Main {
         }
     }
 
+    // 🔹 منوی مشتری
     private static void customerMenu(Scanner input, Bank bank, Customer customer) {
         while (true) {
             System.out.println("\n📱 منوی مشتری (" + customer.getName() + "):");
@@ -168,7 +180,8 @@ public class Main {
                     }
                 }
                 case 5 -> {
-                    Teller teller = new Teller(new Branch("Tehran"));
+                    Branch branch = bank.getBranches().get(0);
+                    Teller teller = new Teller(branch);
                     teller.agreeWithRequest("loan", customer);
                 }
                 case 6 -> {
@@ -178,7 +191,8 @@ public class Main {
                         customer.viewAccounts();
                         System.out.print("شماره حسابی که می‌خوای ببندی رو وارد کن: ");
                         String accNum = input.nextLine();
-                        Teller teller = new Teller(new Branch("Tehran"));
+                        Branch branch = bank.getBranches().get(0);
+                        Teller teller = new Teller(branch);
                         teller.agreeWithRequest("close account", customer);
                         customer.closeAccount(accNum);
                     }
@@ -191,9 +205,66 @@ public class Main {
         }
     }
 
+
+    private static void managerMenu(Scanner input, Bank bank) {
+        System.out.print("شناسه مدیر شعبه را وارد کنید: ");
+        String managerId = input.nextLine();
+
+        BranchManager manager = null;
+        for (Branch b : bank.getBranches()) {
+            if (b.getManager() != null && b.getManager().getEmployeeIdentity().equals(managerId)) {
+                manager = b.getManager();
+                break;
+            }
+        }
+
+        if (manager == null) {
+            System.out.println("❌ مدیر شعبه‌ای با این شناسه پیدا نشد.");
+            return;
+        }
+
+        while (true) {
+            System.out.println("\n👔 منوی مدیر شعبه:");
+            System.out.println("1️⃣ مشاهده درخواست‌ها");
+            System.out.println("2️⃣ تایید درخواست‌ها");
+            System.out.println("3️⃣ مشاهده کارمندان شعبه");
+            System.out.println("4️⃣ حذف کارمند");
+            System.out.println("5️⃣ مشاهده مشتریان شعبه");
+            System.out.println("6️⃣ بازگشت");
+            System.out.print("انتخاب: ");
+
+            int choice = input.nextInt();
+            input.nextLine();
+            switch (choice) {
+                case 1 -> bank.showRequests();
+                case 2 -> {
+                    System.out.print("شناسه درخواست برای تایید: ");
+                    int reqId = input.nextInt();
+                    input.nextLine();
+                    Request req = bank.findRequestById(reqId);
+                    if (req != null) manager.finalizeRequest(req);
+                    else System.out.println("❌ درخواست پیدا نشد.");
+                }
+                case 3 -> manager.showEmployees();
+                case 4 -> {
+                    System.out.print("شناسه کارمند برای حذف: ");
+                    String empId = input.nextLine();
+                    Employee e = manager.getBranchWork().findEmployeeById(empId);
+                    if (e != null) manager.removeEmployee(e);
+                    else System.out.println("❌ کارمند پیدا نشد.");
+                }
+                case 5 -> manager.getBranchWork().showCustomers();
+                case 6 -> { return; }
+                default -> System.out.println("❌ گزینه نامعتبر.");
+            }
+        }
+    }
+
+
     private static void teaBoyMenu() {
         System.out.println("\n🍵 آبدارچی با یک لبخند گرم چای را تقدیم کرد 😊");
     }
+
 
     private static void useToilet() {
         toiletUsageCounter++;
@@ -210,6 +281,7 @@ public class Main {
             System.out.println("✅ با موفقیت از دستشویی استفاده کردید! امیدواریم سبک شده باشید 😌");
         }
     }
+
 
     private static void timeSkipMenu(Scanner input) {
         System.out.print("⏩ چند ماه جلو بریم؟ ");
