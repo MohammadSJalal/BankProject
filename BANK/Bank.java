@@ -1,131 +1,114 @@
-package BANK;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import java.util.ArrayList; import java.util.List; import java.util.Random; import java.util.Scanner;
+public class Bank {
+    private String name;
+    private List<Customer> customers;
+    private List<Branch> branches;
+    private List<Request> requests;
+    private List<Response> responses;
+    private List<BaseLoan> loans;
+    private static Set<String> usedAccountNumbers = new HashSet<>();
 
-public class Main { private static List<String> usedAccountNumbers = new ArrayList<>(); private static int toiletUsageCounter = 0;
+    public Bank(String name) {
+        this.name = name;
+        this.customers = new ArrayList<>();
+        this.branches = new ArrayList<>();
+        this.requests = new ArrayList<>();
+        this.responses = new ArrayList<>();
+        this.loans = new ArrayList<>();
+    }
 
-public static void main(String[] args) {
-    Scanner input = new Scanner(System.in);
-    Bank bank = new Bank("بانک جدی");
 
-    showRandomMotivationalQuote();
+    public void addCustomer(Customer customer) {
+        customers.add(customer);
+        customer.setBank(this);
+    }
 
-    while (true) {
-        System.out.println("\n🎉 به سیستم مدیریت بانک خوش اومدی!");
-        System.out.println("1️⃣ ورود مشتری");
-        System.out.println("2️⃣ استفاده از پارتی بازی ⏩");
-        System.out.println("3️⃣ خروج ❌");
-        System.out.print("انتخاب شما: ");
+    public List<Customer> getCustomers() { return customers; }
 
-        int choice = input.nextInt();
-        input.nextLine();
+    public void showCustomers() {
+        if (customers.isEmpty()) {
+            System.out.println("👥 هیچ مشتری در بانک ثبت نشده است.");
+            return;
+        }
+        System.out.println("👥 لیست مشتریان بانک:");
+        for (Customer c : customers) System.out.println("- " + c);
+    }
 
-        switch (choice) {
-            case 1 -> customerMenu(input, bank);
-            case 2 -> timeSkipMenu();
-            case 3 -> {
-                System.out.println("👋 خداحافظ! روز خوبی داشته باشی.");
-                return;
+
+    public void addBranch(Branch branch) { branches.add(branch); }
+
+    public List<Branch> getBranches() { return branches; }
+
+    public void showBranchesAndEmployees() {
+        if (branches.isEmpty()) {
+            System.out.println("🏢 هیچ شعبه‌ای ثبت نشده است.");
+            return;
+        }
+        System.out.println("🏢 شعب و کارمندان:");
+        for (Branch b : branches) {
+            System.out.println(b);
+            for (Employee e : b.getEmployees()) {
+                System.out.println("   - " + e);
             }
-            default -> System.out.println("❌ گزینه نامعتبره! لطفاً عدد درست وارد کن.");
         }
     }
-}
 
-private static void showRandomMotivationalQuote() {
-    String[] quotes = {
-        "💡 امروزت رو با لبخند شروع کن. حتی اگه حسابت خالیه!",
-        "🚀 هیچ وامی بزرگ‌تر از تلاش خودت نیست!",
-        "🌟 موفقیت از پس‌انداز شروع می‌شه، نه از پارتی‌بازی!",
-        "💰 حتی یه ریال هم می‌تونه شروع یه امپراتوری باشه.",
-        "🤝 لبخندت سرمایه‌ی اولته، نگهش دار."
-    };
-    int idx = new Random().nextInt(quotes.length);
-    System.out.println("\n" + quotes[idx]);
-}
 
-private static void customerMenu(Scanner input, Bank bank) {
-    while (true) {
-        System.out.println("\n📱 منوی مشتری:");
-        System.out.println("1️⃣ ایجاد حساب جدید 🆕");
-        System.out.println("2️⃣ انتقال پول 💸");
-        System.out.println("3️⃣ مشاهده پیام‌ها 📬");
-        System.out.println("4️⃣ درخواست چای 🍵");
-        System.out.println("5️⃣ رفتن به دستشویی 🚽");
-        System.out.println("6️⃣ بازگشت 🔙");
-        System.out.print("انتخاب شما: ");
+    public void addRequest(Request req) { requests.add(req); }
 
-        int choice = input.nextInt();
-        input.nextLine();
+    public List<Request> getRequests() { return requests; }
 
-        switch (choice) {
-            case 1 -> System.out.println("🆕 ساخت حساب هنوز پیاده‌سازی نشده.");
-            case 2 -> System.out.println("💸 انتقال پول هنوز پیاده‌سازی نشده.");
-            case 3 -> System.out.println("📬 مشاهده پیام‌ها هنوز پیاده‌سازی نشده.");
-            case 4 -> teaBoyMenu();
-            case 5 -> useToilet();
-            case 6 -> {
-                return;
-            }
-            default -> System.out.println("❌ گزینه نامعتبره! لطفاً عدد درست وارد کن.");
+    public void showRequests() {
+        if (requests.isEmpty()) {
+            System.out.println("📄 هیچ درخواستی ثبت نشده.");
+            return;
         }
-    }
-}
-
-private static void teaBoyMenu() {
-    System.out.println("\n🍵 آبدارچی با یک لبخند گرم چای را تقدیم کرد 😊");
-}
-
-private static void useToilet() {
-    toiletUsageCounter++;
-    if (toiletUsageCounter >= 3) {
-        System.out.println("🚨 سوء استفاده مالیاتی از دستشویی شناسایی شد! گزارش به مدیر ارسال شد.");
-        toiletUsageCounter = 0;
-        return;
+        System.out.println("📄 لیست درخواست‌ها:");
+        for (Request r : requests) System.out.println(r);
     }
 
-    double chance = Math.random();
-    if (chance < 0.3) {
-        System.out.println("😳 کسی شما رو دید! شما برای ۲ دقیقه از عملیات بانکی محروم شدید 🚫");
-    } else {
-        System.out.println("✅ با موفقیت از دستشویی استفاده کردید! امیدواریم سبک شده باشید 😌");
+    public Request findRequestById(int id) {
+        for (Request r : requests) {
+            if (r.getId() == id) return r; // نکته: getId() نه getRequestId()
+        }
+        return null;
+    }
+
+    public void addResponse(Response response) { responses.add(response); }
+
+    public List<Response> getResponses() { return responses; }
+
+
+    public void addLoan(BaseLoan loan) { loans.add(loan); } // نکته: BaseLoan
+
+    public List<BaseLoan> getLoans() { return loans; }
+
+
+    public static boolean isAccountNumberUsed(String accNum) {
+        return usedAccountNumbers.contains(accNum);
+    }
+
+    public static void markAccountNumberUsed(String accNum) {
+        usedAccountNumbers.add(accNum);
+    }
+
+
+    public static Account findAccount(String accNum) {
+        Bank bank = BankSystemHolder.getBank();
+        for (Customer c : bank.getCustomers()) {
+            for (Account a : c.getAccounts()) {
+                if (a.getAccountNumber().equals(accNum)) return a;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "بانک " + name + " با " + customers.size() + " مشتری و " + branches.size() + " شعبه.";
     }
 }
-
-private static void timeSkipMenu() {
-    Scanner input = new Scanner(System.in);
-    System.out.print("⏩ چند ماه جلو بریم؟ ");
-    int skip = input.nextInt();
-    TimeManager.skipMonths(skip);
-}
-
-private static boolean isValidNationalCode(String code) {
-    if (code == null || code.length() != 10) return false;
-    for (char c : code.toCharArray()) {
-        if (!Character.isDigit(c)) return false;
-    }
-    return true;
-}
-
-private static boolean isValidPhoneNumber(String phone) {
-    if (phone == null || phone.length() != 11) return false;
-    if (phone.charAt(0) != '0') return false;
-    for (char c : phone.toCharArray()) {
-        if (!Character.isDigit(c)) return false;
-    }
-    return true;
-}
-
-public static boolean isAccountNumberUsed(String accountNumber) {
-    for (String acc : usedAccountNumbers) {
-        if (acc.equals(accountNumber)) return true;
-    }
-    return false;
-}
-
-public static void markAccountNumberUsed(String accountNumber) {
-    usedAccountNumbers.add(accountNumber);
-}
-
-}
-
