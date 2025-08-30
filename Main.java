@@ -182,7 +182,7 @@ public class Main {
                 case 5 -> {
                     Branch branch = bank.getBranches().get(0);
                     Teller teller = new Teller(branch);
-                    teller.agreeWithRequest("loan", customer);
+                    teller.handleRequest("loan", customer);
                 }
                 case 6 -> {
                     if (customer.getAccounts().isEmpty()) {
@@ -193,7 +193,7 @@ public class Main {
                         String accNum = input.nextLine();
                         Branch branch = bank.getBranches().get(0);
                         Teller teller = new Teller(branch);
-                        teller.agreeWithRequest("close account", customer);
+                        teller.handleRequest("close account", customer);
                         customer.closeAccount(accNum);
                     }
                 }
