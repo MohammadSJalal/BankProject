@@ -6,12 +6,12 @@ public class BranchManager extends Employee {
         this.branchWork = branchWork;
         this.employeeIdentity = "M-" + branchWork.getId() + "-" + counter++;
         setSalary();
-        branchWork.addEmployee(this); // خودش رو به لیست کارمندهای شعبه اضافه می‌کنه
+        branchWork.addEmployee(this); 
     }
 
     @Override
     public void setSalary() {
-        this.salary = BaseSalary * 2; // حقوق مدیر دو برابر پایه است
+        this.salary = BaseSalary * 2; 
     }
 
     public double getSalary() {
