@@ -1,84 +1,60 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Branch {
     private static int branchCounter = 1;
-    private int branchId;
-    private String name;
-    private List<Employee> employees;
-    private List<Customer> customers;
+    private final int branchId;
+    private final String name;
+    private final List<Employee> employees = new ArrayList<>();
+    private final List<Customer> customers = new ArrayList<>();
+    private final List<Account> accounts = new ArrayList<>();
     private BranchManager manager;
 
     public Branch(String name) {
         this.name = name;
         this.branchId = branchCounter++;
-        this.employees = new ArrayList<>();
-        this.customers = new ArrayList<>();
     }
 
+    public int getId(){ return branchId; }
+    public String getName(){ return name; }
+    public List<Employee> getEmployees(){ return Collections.unmodifiableList(employees); }
+    public List<Customer> getCustomers(){ return Collections.unmodifiableList(customers); }
+    public List<Account> getAccounts(){ return Collections.unmodifiableList(accounts); }
+    public BranchManager getManager(){ return manager; }
 
-    public int getId() {
-        return branchId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<Employee> getEmployees() {
-        return employees;
-    }
-
-    public List<Customer> getCustomers() {
-        return customers;
-    }
-
-    public BranchManager getManager() {
-        return manager;
-    }
-
-
-    public void addEmployee(Employee e) {
+    public void addEmployeeDirect(Employee e) {
         employees.add(e);
-        if (e instanceof BranchManager bm) {
-            this.manager = bm;
+        if (e instanceof BranchManager) this.manager = (BranchManager) e;
+    }
+
+    public void removeEmployeeDirect(Employee e) {
+        employees.remove(e);
+        if (e instanceof BranchManager) this.manager = null;
+    }
+
+    public void addCustomer(Customer c) {
+        if (!customers.contains(c)) {
+            customers.add(c);
+            c.setBranch(this);
         }
     }
 
-    public void removeEmployee(Employee e) {
-        employees.remove(e);
-        if (e instanceof BranchManager) {
-            this.manager = null;
-        }
-    }
+    public void removeCustomer(Customer c) { customers.remove(c); c.setBranch(null); }
+
+    public void addAccount(Account a) { if (!accounts.contains(a)) accounts.add(a); }
+
+    public void removeAccount(Account a) { accounts.remove(a); }
 
     public Employee findEmployeeById(String id) {
-        for (Employee e : employees) {
-            if (e.getEmployeeIdentity().equals(id)) return e;
-        }
+        for (Employee e : employees) if (e.getEmployeeIdentity().equals(id)) return e;
         return null;
     }
 
-
-    public void addCustomer(Customer c) {
-        if (!customers.contains(c)) customers.add(c);
-    }
-
-    public void removeCustomer(Customer c) {
-        customers.remove(c);
-    }
-
-    public void showCustomers() {
-        if (customers.isEmpty()) {
-            System.out.println("👥 مشتری‌ای در این شعبه ثبت نشده.");
-            return;
-        }
+    public void showCustomers(){
+        if (customers.isEmpty()) { System.out.println("👥 مشتری‌ای در این شعبه ثبت نشده."); return; }
         System.out.println("👥 مشتریان شعبه " + name + ":");
         for (Customer c : customers) System.out.println("- " + c);
     }
 
     @Override
-    public String toString() {
-        return "🏢 شعبه: " + name + " (ID: " + branchId + ")";
-    }
+    public String toString() { return "🏢 شعبه: " + name + " (ID: " + branchId + ")"; }
 }
