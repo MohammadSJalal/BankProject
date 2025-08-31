@@ -1,131 +1,136 @@
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Customer extends Person {
-    private static int customerCounter = 0;
-    private String customerId;
-    private List<Account> accounts;
-    private List<String> inboxMessages;
-    private List<BaseLoan> loans;
-    private Bank bank;
+    private static int counter = 1;
+    private final String customerId;
+    private final List<Account> accounts = new ArrayList<>();
+    private final List<BaseLoan> loans = new ArrayList<>();
+    private final List<String> inboxMessages = new ArrayList<>();
+    private Branch branch;
 
-    public Customer(String name, String familyName, Date birthDate, String nationalCode, String phoneNumber, String address) {
-        super(name, familyName, birthDate, nationalCode, phoneNumber, address);
-        this.customerId = "C" + (++customerCounter);
-        this.accounts = new ArrayList<>();
-        this.inboxMessages = new ArrayList<>();
-        this.loans = new ArrayList<>();
+    public Customer(String name, String family, Date birthDate,
+                    String nationalCode, String phone, String address) {
+        super(name, family, birthDate, nationalCode, phone, address);
+        this.customerId = "CUST-" + (counter++);
     }
 
-    public String getCustomerId() {
-        return customerId;
-    }
+    public String getCustomerId() { return customerId; }
+    public List<Account> getAccounts() { return accounts; }
+    public List<BaseLoan> getLoans() { return loans; }
+    public List<String> getInboxMessages() { return inboxMessages; }
 
-    public List<Account> getAccounts() {
-        return accounts;
-    }
-
-    public List<String> getInboxMessages() {
-        return inboxMessages;
-    }
-
-    public List<BaseLoan> getLoans() {
-        return loans;
-    }
-
-    public void addLoan(BaseLoan loan) {
-        this.loans.add(loan);
-    }
+    // ---------- شعبه / بانک ----------
+    public Branch getBranch() { return branch; }
+    public void setBranch(Branch b) { this.branch = b; }
+    public Bank getBank() { return BankSystemHolder.getBank(); }
 
     public boolean hasActiveLoan() {
-        return !loans.isEmpty();
+        for (BaseLoan l : loans) if (l.isActive()) return true;
+        return false;
     }
 
-    public void addMessage(String message) {
-        inboxMessages.add(message);
-    }
-
-    public void setBank(Bank bank) {
-        this.bank = bank;
-    }
-
-    public Bank getBank() {
-        return bank;
-    }
-
-    public void createAccount(String accountType, int initialBalance) {
-        String prefix = switch (accountType.toLowerCase()) {
-            case "جاری", "jari" -> "01";
-            case "کوتاه", "kootah" -> "02";
-            case "قرض", "gharz" -> "03";
-            default -> throw new IllegalArgumentException("نوع حساب نامعتبر است.");
-        };
-
-        Account account = new Account(this, initialBalance, prefix);
-
-        if (Bank.isAccountNumberUsed(account.getAccountNumber())) {
-            throw new IllegalArgumentException("شماره حساب تکراری است.");
+    // ---------- ساخت حساب ----------
+    public void createAccount(String type, int balance) {
+        Account.AccountType accType = parseAccountType(type);
+        if (accType == null) {
+            System.out.println("❌ نوع حساب نامعتبر. یکی از موارد «جاری / کوتاه / قرض» یا 01/02/03 را وارد کنید.");
+            return;
+        }
+        if (balance < 0) {
+            System.out.println("❌ موجودی اولیه نمی‌تواند منفی باشد.");
+            return;
         }
 
-        Bank.markAccountNumberUsed(account.getAccountNumber());
-        accounts.add(account);
+        Account acc = new Account(this, balance, accType);
+        accounts.add(acc);
+        Bank bank = getBank();
+        if (bank != null) bank.addAccount(acc);
 
-        System.out.println("حساب جدید با شماره " + account.getAccountNumber() + " برای مشتری " + customerId + " ایجاد شد.");
-    }
-
-    public void transferMoney(Account from, Account to, int amount) {
-        try {
-            if (accounts.contains(from)) {
-                from.withdraw(amount);
-                to.deposit(amount);
-                System.out.println("Amount " + amount + " from account " + from.getAccountNumber() + " to account " + to.getAccountNumber() + " transferred successfully.");
-            } else {
-                System.out.println("حساب مبدا متعلق به این مشتری نیست.");
-            }
-        } catch (Exception e) {
-            System.out.println("خطا در انتقال: " + e.getMessage());
+        if (bank != null) {
+            bank.addReport(new Report("ایجاد حساب", "ایجاد حساب جدید " + acc.getAccountNumber() + " برای مشتری " + getName(), true));
         }
+        System.out.println("✅ حساب ساخته شد: " + acc.getAccountNumber());
     }
 
-    public void deposit(Account account, int amount) {
-        account.deposit(amount);
-        System.out.println("مبلغ " + amount + " به حساب " + account.getAccountNumber() + " واریز شد.");
+    private Account.AccountType parseAccountType(String input) {
+        if (input == null) return null;
+        String s = input.trim().toLowerCase();
+        if (s.equals("جاری") || s.equals("حساب جاری") || s.equals("01") || s.equals("1")) return Account.AccountType.JARI;
+        if (s.equals("کوتاه") || s.equals("کوتاه مدت") || s.equals("02") || s.equals("2")) return Account.AccountType.KOOTAH;
+        if (s.equals("قرض") || s.equals("قرض الحسنه") || s.equals("03") || s.equals("3")) return Account.AccountType.GHARZ;
+        if (s.equals("jari") || s.equals("current")) return Account.AccountType.JARI;
+        if (s.equals("kootah") || s.equals("short") || s.equals("shortterm")) return Account.AccountType.KOOTAH;
+        if (s.equals("gharz") || s.equals("qarz")) return Account.AccountType.GHARZ;
+        return null;
     }
 
-    public void withdraw(Account account, int amount) {
-        account.withdraw(amount);
-        System.out.println("مبلغ " + amount + " از حساب " + account.getAccountNumber() + " برداشت شد.");
-    }
-
+    // ---------- مشاهده حساب‌ها ----------
     public void viewAccounts() {
-        System.out.println("حساب‌های مشتری " + customerId + ":");
-        for (Account acc : accounts) {
-            System.out.println(acc);
+        if (accounts.isEmpty()) {
+            System.out.println("❌ هیچ حسابی موجود نیست.");
+            return;
+        }
+        for (Account a : accounts) System.out.println(" - " + a);
+    }
+
+    // ---------- انتقال وجه ----------
+    public void transferMoney(String from, String to, int amount) {
+        Account fromAcc = findAccount(from);
+        Account toAcc = getBank().findAccount(to);
+        if (fromAcc == null || toAcc == null) {
+            System.out.println("❌ حساب مبدا یا مقصد پیدا نشد.");
+            return;
+        }
+        try {
+            fromAcc.withdraw(amount);
+            toAcc.deposit(amount);
+            Bank bank = getBank();
+            if (bank != null) bank.addReport(new Report("انتقال وجه", "انتقال " + amount + " از " + from + " به " + to, true));
+            System.out.println("✅ انتقال انجام شد.");
+        } catch (Exception e) {
+            System.out.println("❌ خطا: " + e.getMessage());
         }
     }
 
-    public void closeAccount(String accountNumber) {
-        Account toRemove = null;
-        for (Account acc : accounts) {
-            if (acc.getAccountNumber().equals(accountNumber)) {
-                toRemove = acc;
-                break;
+    private Account findAccount(String num) {
+        for (Account a : accounts) if (a.getAccountNumber().equals(num)) return a;
+        return null;
+    }
+
+    // ---------- پیام ----------
+    public void addMessage(String msg) { inboxMessages.add(msg); }
+
+    // ---------- وام ----------
+    public void addLoan(BaseLoan loan) { loans.add(loan); }
+
+    public void viewLoans() {
+        if (loans.isEmpty()) {
+            System.out.println("❌ وامی ندارید.");
+            return;
+        }
+        for (BaseLoan l : loans) System.out.println(l.getLoanInfo());
+    }
+
+    public void payInstallment(String loanId, int amount) {
+        for (BaseLoan l : loans) {
+            if (l.getLoanId().equals(loanId)) {
+                l.payInstallment(amount);
+                return;
             }
         }
-        if (toRemove != null) {
-            if (this.hasActiveLoan()) {
-                addMessage("درخواست حذف حساب رد شد: شما دارای وام فعال هستید.");
-            } else {
-                accounts.remove(toRemove);
-                addMessage("حساب با شماره " + accountNumber + " حذف شد.");
-            }
-        } else {
-            addMessage("حساب موردنظر یافت نشد.");
-        }
+        System.out.println("❌ وام با این شناسه یافت نشد.");
+    }
+
+    // ---------- بستن حساب ----------
+    public void requestCloseAccount(String accNum, Teller teller) {
+        teller.handleRequest("close account", this, accNum);
     }
 
     @Override
     public String toString() {
-        return "Customer ID: " + customerId + ", Name: " + name + " " + familyName + ", National Code: " + nationalCode;
+        return "👤 مشتری: " + getName() + " " + getFamily() + " (کد: " + customerId + ")";
     }
 }
+
