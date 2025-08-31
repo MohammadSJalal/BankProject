@@ -1,40 +1,91 @@
-public abstract class BaseLoan {
-    protected int amount;
-    protected int durationInMonths;
-    protected int governmentShare;
-    protected int customerShare;
-    protected int penaltyPercent;
-    protected Customer borrower;
+import java.util.UUID;
 
-    public BaseLoan(int amount, int durationInMonths, int governmentShare, int customerShare, int penaltyPercent, Customer borrower) {
-        if (amount <= 0 || durationInMonths <= 0) {
-            throw new IllegalArgumentException("مبلغ و مدت باید مثبت باشند.");
-        }
-        if (governmentShare + customerShare != 100) {
-            throw new IllegalArgumentException("مجموع سهم دولت و مشتری باید ۱۰۰ درصد باشد.");
-        }
-        if (penaltyPercent < 0 || penaltyPercent > 100) {
-            throw new IllegalArgumentException("درصد جریمه باید بین ۰ تا ۱۰۰ باشد.");
-        }
-        this.amount = amount;
-        this.durationInMonths = durationInMonths;
-        this.governmentShare = governmentShare;
-        this.customerShare = customerShare;
-        this.penaltyPercent = penaltyPercent;
-        this.borrower = borrower;
+public abstract class BaseLoan {
+    private final String loanId;
+    private final Customer customer;
+    private final int principal; 
+    private int remaining;
+    private int monthsLeft;
+    private boolean active;
+
+    public BaseLoan(Customer customer, int principal, int months) {
+        this.loanId = "LOAN-" + UUID.randomUUID().toString().substring(0, 6);
+        this.customer = customer;
+        this.principal = principal;
+        this.remaining = principal;
+        this.monthsLeft = months;
+        this.active = true;
     }
 
-    public int getAmount() { return amount; }
-    public int getDurationInMonths() { return durationInMonths; }
-    public int getPenaltyPercent() { return penaltyPercent; }
-    public Customer getBorrower() { return borrower; }
+    public String getLoanId() { return loanId; }
+    public Customer getCustomer() { return customer; }
+    public int getRemaining() { return remaining; }
+    public boolean isActive() { return active; }
 
-    public abstract void calculatePenalty(int delayedMonths);
-    public abstract String getLoanType();
+    
+    public void nextMonth() {
+        if (!active) return;
+        if (monthsLeft > 0) {
+            monthsLeft--;
+            if (remaining > 0) {
+                int penalty = calculatePenalty();
+                remaining += penalty;
+                Report r = new Report(
+                        "جریمه وام",
+                        "جریمه ماهانه برای وام " + loanId + ": " + penalty,
+                        false
+                );
+                BankSystemHolder.getBank().addReport(r);
+            }
+        } else {
+            if (remaining > 0) {
+                int penalty = calculatePenalty() * 2; 
+                remaining += penalty;
+                Report r = new Report(
+                        "جریمه سنگین وام",
+                        "تاخیر زیاد در وام " + loanId + ": " + penalty,
+                        false
+                );
+                BankSystemHolder.getBank().addReport(r);
+            }
+        }
+    }
 
-    @Override
-    public String toString() {
-        return "Loan Type: " + getLoanType() + ", Amount: " + amount +
-                ", Duration: " + durationInMonths + " months, Borrower: " + borrower.getCustomerId();
+    public void payInstallment(int amount) {
+        if (!active) {
+            System.out.println("❌ این وام بسته شده.");
+            return;
+        }
+        if (amount <= 0) {
+            System.out.println("❌ مبلغ نامعتبر.");
+            return;
+        }
+        if (amount > remaining) amount = remaining;
+        remaining -= amount;
+
+        Report r = new Report(
+                "پرداخت قسط",
+                "پرداخت " + amount + " برای وام " + loanId,
+                true
+        );
+        BankSystemHolder.getBank().addReport(r);
+
+        if (remaining == 0) {
+            active = false;
+            Report r2 = new Report(
+                    "تسویه وام",
+                    "وام " + loanId + " توسط " + customer.getName() + " تسویه شد.",
+                    true
+            );
+            BankSystemHolder.getBank().addReport(r2);
+        }
+    }
+
+    public abstract int calculatePenalty();
+
+    public String getLoanInfo() {
+        return "🔹 وام " + loanId + " | مبلغ باقی‌مانده: " + remaining +
+                " | ماه‌های باقیمانده: " + monthsLeft +
+                " | فعال: " + active;
     }
 }
