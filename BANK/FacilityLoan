@@ -1,17 +1,10 @@
-
 public class FacilityLoan extends BaseLoan {
-    public FacilityLoan(int amount, int durationInMonths, Customer borrower) {
-        super(amount, durationInMonths, 20, 80, 4, borrower);
+    public FacilityLoan(Customer c, int amount, int months) {
+        super(c, Math.min(amount, 1_000_000_000), months);
     }
 
     @Override
-    public void calculatePenalty(int delayedMonths) {
-        int penaltyAmount = (amount * penaltyPercent / 100) * delayedMonths;
-        System.out.println("جریمه تاخیر وام تسهیلاتی برای " + delayedMonths + " ماه: " + penaltyAmount);
-    }
-
-    @Override
-    public String getLoanType() {
-        return "Facility Loan";
+    public int calculatePenalty() {
+        return (int) (getRemaining() * 0.04); // 4 درصد
     }
 }
