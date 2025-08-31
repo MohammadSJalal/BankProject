@@ -51,12 +51,39 @@ public class Main {
         }
     }
 
+    // ---------------------- متدهای کمکی ----------------------
     private static int safeNextInt(Scanner sc) {
         while (!sc.hasNextInt()) {
             sc.next();
             System.out.print("لطفاً عدد وارد کنید: ");
         }
         return sc.nextInt();
+    }
+
+    private static String readNationalCode(Scanner input) {
+        while (true) {
+            String code = input.nextLine();
+            if (code.matches("\\d{10}")) return code;
+            System.out.print("❌ کد ملی باید 10 رقم عددی باشه. دوباره وارد کن: ");
+        }
+    }
+
+    private static String readPhone(Scanner input) {
+        while (true) {
+            String phone = input.nextLine();
+            if (phone.matches("\\d{11}")) return phone;
+            System.out.print("❌ شماره موبایل باید 11 رقم عددی باشه. دوباره وارد کن: ");
+        }
+    }
+
+    private static int readDay(Scanner input, int month) {
+        int day;
+        while (true) {
+            day = safeNextInt(input);
+            if (day >= 1 && day <= 31) break;
+            System.out.print("❌ روز باید بین 1 تا 31 باشه. دوباره وارد کن: ");
+        }
+        return day;
     }
 
     private static void showRandomMotivationalQuote() {
@@ -74,7 +101,7 @@ public class Main {
     // ---------------------- مشتری ----------------------
     private static void loginCustomer(Scanner input, Bank bank, Teller teller) {
         System.out.print("کد ملی مشتری رو وارد کن: ");
-        String nationalCode = input.nextLine();
+        String nationalCode = readNationalCode(input); // ✅ با اعتبارسنجی
 
         Customer found = null;
         for (Customer c : bank.getCustomers()) {
@@ -97,20 +124,23 @@ public class Main {
             String name = input.nextLine();
             System.out.print("نام خانوادگی: ");
             String family = input.nextLine();
+
             System.out.print("سال تولد: ");
             int year = safeNextInt(input);
             System.out.print("ماه تولد: ");
             int month = safeNextInt(input);
             System.out.print("روز تولد: ");
-            int day = safeNextInt(input);
+            int day = readDay(input, month);
             input.nextLine();
+
             System.out.print("کد ملی (10 رقمی): ");
-            String nationalCode = input.nextLine();
+            String nationalCode = readNationalCode(input);
+
             System.out.print("شماره موبایل (11 رقمی): ");
-            String phone = input.nextLine();
+            String phone = readPhone(input);
+
             System.out.print("آدرس: ");
             String address = input.nextLine();
-
 
             java.util.Date birthDate = new java.util.Date(year - 1900, month - 1, day);
 
