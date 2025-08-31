@@ -1,65 +1,68 @@
+import java.util.*;
+
 public class AssistantManager extends Employee {
     private static int counter = 1;
     private double salary;
+    private final List<Request> inbox = new ArrayList<>();
 
     public AssistantManager(Branch branchWork) {
         this.branchWork = branchWork;
         this.employeeIdentity = "A-" + branchWork.getId() + "-" + counter++;
         setSalary();
-        branchWork.addEmployee(this);
+        branchWork.addEmployeeDirect(this);
     }
 
     @Override
-    public void setSalary() {
-        this.salary = BaseSalary * 1.5;
+    public void setSalary() { this.salary = BaseSalary * 1.5; }
+
+    public void addRequest(Request req) { inbox.add(req); }
+
+    public void showInbox() {
+        if (inbox.isEmpty()) { System.out.println("📭 اینباکس خالی است."); return; }
+        System.out.println("📩 درخواست‌های دریافتی معاون:");
+        for (Request r : inbox) System.out.println(r);
     }
 
-    public double getSalary() {
-        return salary;
-    }
+    public void approveRequest(int reqId) {
+        Request toApprove = null;
+        for (Request r : inbox) { if (r.getId() == reqId) { toApprove = r; break; } }
+        if (toApprove == null) { System.out.println("❌ درخواست پیدا نشد."); return; }
 
-
-    public void handleRequest(String requestType, Customer customer) {
-        if (requestType.equalsIgnoreCase("loan")) {
-            if (customer.hasActiveLoan()) {
-                customer.addMessage("❌ درخواست وام رد شد: شما وام فعال دارید.");
+        
+        Customer requester = toApprove.getRequester();
+        String type = toApprove.getType();
+        if (type.contains("loan")) {
+            if (requester.hasActiveLoan()) {
+                requester.addMessage("❌ درخواست وام رد شد: وام فعال دارید.");
+                new Response(toApprove, false, "مشتری وام فعال دارد.");
+                inbox.remove(toApprove);
                 return;
             }
-            BranchManager manager = getBranchManager();
-            if (manager != null) {
-                manager.receiveMessage("📢 تایید نهایی وام برای مشتری: " + customer.getCustomerId());
-                Request req = new Request("loan final approval", customer);
-                customer.getBank().addRequest(req);
-            } else {
-                customer.addMessage("❌ مدیر شعبه پیدا نشد. درخواست ثبت نشد.");
-            }
-
-        } else if (requestType.equalsIgnoreCase("close account")) {
-            BranchManager manager = getBranchManager();
-            if (manager != null) {
-                manager.receiveMessage("📢 تایید نهایی حذف حساب مشتری: " + customer.getCustomerId());
-                Request req = new Request("close account final approval", customer);
-                customer.getBank().addRequest(req);
-            } else {
-                customer.addMessage("❌ مدیر شعبه پیدا نشد. درخواست حذف حساب ثبت نشد.");
+        } else if (type.contains("close account")) {
+            if (requester.hasActiveLoan()) {
+                requester.addMessage("❌ درخواست بستن حساب رد شد: وام فعال دارید.");
+                new Response(toApprove, false, "مشتری وام فعال دارد، بستن حساب ممکن نیست.");
+                inbox.remove(toApprove);
+                return;
             }
         }
-    }
 
-
-    private BranchManager getBranchManager() {
-        for (Employee e : branchWork.getEmployees()) {
-            if (e instanceof BranchManager) return (BranchManager) e;
+        
+        BranchManager bm = branchWork.getManager();
+        if (bm != null) {
+            bm.addRequest(toApprove);
+            bm.receiveMessage("📢 درخواست ارجاع‌شده از معاون: " + toApprove);
+            inbox.remove(toApprove);
+            System.out.println("✅ درخواست به مدیر شعبه ارجاع شد.");
+        } else {
+            requester.addMessage("❌ مدیر شعبه پیدا نشد؛ درخواست رد شد.");
+            new Response(toApprove, false, "مدیر شعبه موجود نیست.");
+            inbox.remove(toApprove);
         }
-        return null;
     }
 
     @Override
     public String toString() {
-        return "AssistantManager{" +
-                "ID='" + employeeIdentity + '\'' +
-                ", Branch=" + branchWork.getId() +
-                ", Salary=" + salary +
-                '}';
+        return "AssistantManager{ID='" + employeeIdentity + "', Branch=" + (branchWork!=null?branchWork.getName():"null") + "}";
     }
 }
