@@ -1,57 +1,42 @@
-public abstract class Person {
-    protected String name;
-    protected String familyName;
-    protected Date birthDate;
-    protected String nationalCode;
-    protected String phoneNumber;
-    protected String address;
+import java.util.Date;
 
-    public Person(String name, String familyName, Date birthDate, String nationalCode, String phoneNumber, String address) {
-        if (!isValidNationalCode(nationalCode)) {
-            throw new IllegalArgumentException("کد ملی باید 10 رقمی باشد.");
-        }
-        if (!isValidPhoneNumber(phoneNumber)) {
-            throw new IllegalArgumentException("شماره تلفن همراه باید 11 رقمی و با صفر شروع شود.");
-        }
+public class Person {
+    private String name;
+    private String family;
+    private Date birthDate;
+    private String nationalCode;
+    private String phone;
+    private String address;
 
+    public Person(String name, String family, Date birthDate,
+                  String nationalCode, String phone, String address) {
         this.name = name;
-        this.familyName = familyName;
+        this.family = family;
         this.birthDate = birthDate;
         this.nationalCode = nationalCode;
-        this.phoneNumber = phoneNumber;
+        this.phone = phone;
         this.address = address;
     }
 
-    private boolean isValidNationalCode(String code) {
-        if (code == null || code.length() != 10) return false;
-        for (char c : code.toCharArray()) {
-            if (!Character.isDigit(c)) return false;
-        }
-        return true;
-    }
-
-    private boolean isValidPhoneNumber(String phone) {
-        if (phone == null || phone.length() != 11) return false;
-        if (phone.charAt(0) != '0') return false;
-        for (char c : phone.toCharArray()) {
-            if (!Character.isDigit(c)) return false;
-        }
-        return true;
-    }
-
+    // --------- Getter ها ---------
     public String getName() { return name; }
-    public String getFamilyName() { return familyName; }
+    public String getFamily() { return family; }
     public Date getBirthDate() { return birthDate; }
     public String getNationalCode() { return nationalCode; }
-    public String getPhoneNumber() { return phoneNumber; }
+    public String getPhone() { return phone; }
     public String getAddress() { return address; }
+
+    // --------- Setter ها ---------
+    public void setName(String name) { this.name = name; }
+    public void setFamily(String family) { this.family = family; }
+    public void setBirthDate(Date birthDate) { this.birthDate = birthDate; }
+    public void setNationalCode(String nationalCode) { this.nationalCode = nationalCode; }
+    public void setPhone(String phone) { this.phone = phone; }
+    public void setAddress(String address) { this.address = address; }
 
     @Override
     public String toString() {
-        return "Name: " + name + " " + familyName + "\n" +
-                "Birth Date: " + birthDate + "\n" +
-                "National Code: " + nationalCode + "\n" +
-                "Phone: " + phoneNumber + "\n" +
-                "Address: " + address;
+        return name + " " + family + " | کد ملی: " + nationalCode +
+                " | تولد: " + birthDate + " | تلفن: " + phone;
     }
 }
