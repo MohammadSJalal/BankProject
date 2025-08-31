@@ -76,14 +76,39 @@ public class Main {
         }
     }
 
+    private static int readYear(Scanner input) {
+        int year;
+        while (true) {
+            year = safeNextInt(input);
+            if (year >= 1300 && year <= 1500) return year;
+            System.out.print("❌ سال تولد نامعتبره (باید بین 1300 تا 1500 باشه). دوباره وارد کن: ");
+        }
+    }
+
+    private static int readMonth(Scanner input) {
+        int month;
+        while (true) {
+            month = safeNextInt(input);
+            if (month >= 1 && month <= 12) return month;
+            System.out.print("❌ ماه باید بین 1 تا 12 باشه. دوباره وارد کن: ");
+        }
+    }
+
     private static int readDay(Scanner input, int month) {
         int day;
+        int maxDay;
+        switch (month) {
+            case 1, 3, 5, 7, 8, 10, 12 -> maxDay = 31;
+            case 4, 6, 9, 11 -> maxDay = 30;
+            case 2 -> maxDay = 29; // فرض ساده
+            default -> maxDay = 31;
+        }
+
         while (true) {
             day = safeNextInt(input);
-            if (day >= 1 && day <= 31) break;
-            System.out.print("❌ روز باید بین 1 تا 31 باشه. دوباره وارد کن: ");
+            if (day >= 1 && day <= maxDay) return day;
+            System.out.print("❌ روز باید بین 1 تا " + maxDay + " باشه. دوباره وارد کن: ");
         }
-        return day;
     }
 
     private static void showRandomMotivationalQuote() {
@@ -101,7 +126,7 @@ public class Main {
     // ---------------------- مشتری ----------------------
     private static void loginCustomer(Scanner input, Bank bank, Teller teller) {
         System.out.print("کد ملی مشتری رو وارد کن: ");
-        String nationalCode = readNationalCode(input); // ✅ با اعتبارسنجی
+        String nationalCode = readNationalCode(input);
 
         Customer found = null;
         for (Customer c : bank.getCustomers()) {
@@ -126,9 +151,11 @@ public class Main {
             String family = input.nextLine();
 
             System.out.print("سال تولد: ");
-            int year = safeNextInt(input);
+            int year = readYear(input);
+
             System.out.print("ماه تولد: ");
-            int month = safeNextInt(input);
+            int month = readMonth(input);
+
             System.out.print("روز تولد: ");
             int day = readDay(input, month);
             input.nextLine();
