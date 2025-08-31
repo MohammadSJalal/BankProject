@@ -1,16 +1,10 @@
 public class NormalLoan extends BaseLoan {
-    public NormalLoan(int amount, int durationInMonths, Customer borrower) {
-        super(amount, durationInMonths, 40, 60, 6, borrower);
+    public NormalLoan(Customer c, int amount, int months) {
+        super(c, Math.min(amount, 500_000_000), months);
     }
 
     @Override
-    public void calculatePenalty(int delayedMonths) {
-        int penaltyAmount = (amount * penaltyPercent / 100) * delayedMonths;
-        System.out.println("جریمه تاخیر وام عادی برای " + delayedMonths + " ماه: " + penaltyAmount);
-    }
-
-    @Override
-    public String getLoanType() {
-        return "Normal Loan";
+    public int calculatePenalty() {
+        return (int) (getRemaining() * 0.06); // 6 درصد
     }
 }
