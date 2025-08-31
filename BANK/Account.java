@@ -1,58 +1,51 @@
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Account {
-    private static int counter = 1;
+    public enum AccountType { JARI, KOOTAH, GHARZ }
+
+    private static final AtomicInteger counter = new AtomicInteger(1000);
     private final String accountNumber;
     private int balance;
-    private Customer owner;
+    private final Customer owner;
+    private final AccountType type;
 
-    public Account(Customer owner, int initialBalance, String typePrefix) {
-        if (initialBalance < 0) {
-            throw new IllegalArgumentException("موجودی اولیه نمی‌تونه منفی باشه.");
-        }
-
+    public Account(Customer owner, int balance, AccountType type) {
+        if (balance < 0) throw new IllegalArgumentException("❌ موجودی اولیه نمی‌تواند منفی باشد.");
         this.owner = owner;
-        this.balance = initialBalance;
-        this.accountNumber = generateAccountNumber(typePrefix);
+        this.balance = balance;
+        this.type = type;
+        this.accountNumber = "ACC-" + counter.getAndIncrement();
     }
-
-
-    private String generateAccountNumber(String prefix) {
-
-        String accNum = prefix + String.format("%011d", counter++);
-        return accNum;
-    }
-
 
     public String getAccountNumber() { return accountNumber; }
     public int getBalance() { return balance; }
     public Customer getOwner() { return owner; }
-
+    public AccountType getType() { return type; }
 
     public void deposit(int amount) {
-        if (amount <= 0) throw new IllegalArgumentException("مبلغ واریز باید بیشتر از صفر باشه.");
+        if (amount <= 0) throw new IllegalArgumentException("❌ مبلغ واریز باید مثبت باشد.");
         balance += amount;
     }
 
-
     public void withdraw(int amount) {
-        if (amount <= 0) throw new IllegalArgumentException("مبلغ برداشت باید بیشتر از صفر باشه.");
-        if (amount > balance) throw new IllegalArgumentException("موجودی کافی نیست.");
+        if (amount <= 0) throw new IllegalArgumentException("❌ مبلغ برداشت باید مثبت باشد.");
+        if (amount > balance) throw new IllegalArgumentException("❌ موجودی کافی نیست.");
         balance -= amount;
     }
 
-
-    public int getBalanceWithFee() {
-        int fee = 1000;
-        if (balance < fee) {
-            throw new IllegalArgumentException("موجودی برای کسر کارمزد کافی نیست.");
+    public void applyMonthlyInterest() {
+        if (type == AccountType.KOOTAH) {
+            balance += (balance * 5) / (12 * 100);
         }
-        balance -= fee;
-        return balance;
     }
 
     @Override
     public String toString() {
-        return "Account Number: " + accountNumber +
-                ", Balance: " + balance +
-                ", Owner: " + owner.getCustomerId();
+        return "💳 حساب{" +
+                " شماره='" + accountNumber + '\'' +
+                ", موجودی=" + balance +
+                ", نوع=" + type +
+                ", صاحب=" + owner.getName() + " " + owner.getFamily() +
+                '}';
     }
 }
