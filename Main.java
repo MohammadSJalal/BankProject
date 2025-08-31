@@ -205,7 +205,18 @@ public class Main {
                     if (customer.getInboxMessages().isEmpty()) System.out.println("پیامی موجود نیست.");
                     else for (String msg : customer.getInboxMessages()) System.out.println("- " + msg);
                 }
-                case 5 -> teller.handleRequest("loan", customer);
+                case 5 -> {
+                    System.out.println("چه نوع وامی می‌خواهید؟");
+                    System.out.println("1️⃣ وام عادی");
+                    System.out.println("2️⃣ وام تسهیلاتی");
+                    int loanChoice = safeNextInt(input);
+                    input.nextLine();
+                    switch (loanChoice) {
+                        case 1 -> teller.handleRequest("normalLoan", customer);
+                        case 2 -> teller.handleRequest("facilityLoan", customer);
+                        default -> System.out.println("❌ نوع وام نامعتبره!");
+                    }
+                }
                 case 6 -> {
                     if (customer.getAccounts().isEmpty()) {
                         System.out.println("❌ حسابی برای بستن وجود نداره.");
