@@ -1,3 +1,5 @@
+import java.util.*;
+
 public class Response {
     private final Request request;
     private final boolean approved;
@@ -9,18 +11,17 @@ public class Response {
         this.approved = approved;
         this.message = message;
         this.responseDate = TimeManager.getCurrentDate();
+        
+        new Report("Response to Request #" + request.getId(), message, approved);
     }
 
-    public Request getRequest() { return request; }
-    public boolean isApproved() { return approved; }
-    public String getMessage() { return message; }
-    public Date getResponseDate() { return responseDate; }
+    public Request getRequest(){ return request; }
+    public boolean isApproved(){ return approved; }
+    public String getMessage(){ return message; }
+    public Date getResponseDate(){ return responseDate; }
 
     @Override
-    public String toString() {
-        return "Response to Request #" + request.getId() +
-                " | Status: " + (approved ? "Approved" : "Rejected") +
-                " | Message: " + message +
-                " | Date: " + responseDate;
+    public String toString(){
+        return "Response to Request #" + request.getId() + " | Status: " + (approved ? "Approved" : "Rejected") + " | Message: " + message + " | Date: " + responseDate;
     }
 }
