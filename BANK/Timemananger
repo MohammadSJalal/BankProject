@@ -1,20 +1,25 @@
+import java.util.*;
+
 public class TimeManager {
-    private static Date currentDate = new Date(2025, 1, 1);
+    private static Date currentDate = new Date(2025,1,1);
 
-    public static Date getCurrentDate() {
-        return currentDate;
-    }
+    public static Date getCurrentDate(){ return currentDate; }
 
-    public static void skipDays(int days) {
-        for (int i = 0; i < days; i++) {
-            currentDate.incrementDay();
-        }
+    public static void skipDays(int days){
+        for (int i=0;i<days;i++) currentDate.incrementDay();
         System.out.println("🕒 زمان به تاریخ: " + currentDate + " منتقل شد.");
     }
 
-    public static void skipMonths(int months) {
-        for (int i = 0; i < months; i++) {
+    public static void skipMonths(int months){
+        for (int i=0;i<months;i++) {
             currentDate.incrementMonth();
+            
+            try {
+                Bank bank = BankSystemHolder.getBank();
+                bank.applyMonthlyInterestToAll();
+            } catch (IllegalStateException ignored) {
+                
+            }
         }
         System.out.println("🕒 زمان به تاریخ: " + currentDate + " منتقل شد.");
     }
