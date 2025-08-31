@@ -1,24 +1,30 @@
+import java.util.*;
+
 public class Request {
     private static int counter = 0;
     private final int id;
     private final String type;
     private final Customer requester;
     private final Date requestDate;
+    private final String payload; 
 
-    public Request(String type, Customer requester) {
+    public Request(String type, Customer requester) { this(type, requester, null); }
+    public Request(String type, Customer requester, String payload) {
         this.id = ++counter;
         this.type = type.toLowerCase();
         this.requester = requester;
         this.requestDate = TimeManager.getCurrentDate();
+        this.payload = payload;
     }
 
-    public int getId() { return id; }
-    public String getType() { return type; }
-    public Customer getRequester() { return requester; }
-    public Date getRequestDate() { return requestDate; }
+    public int getId(){ return id; }
+    public String getType(){ return type; }
+    public Customer getRequester(){ return requester; }
+    public Date getRequestDate(){ return requestDate; }
+    public String getPayload(){ return payload; }
 
     @Override
-    public String toString() {
-        return "Request #" + id + " | Type: " + type + " | From: " + requester.getCustomerId() + " | Date: " + requestDate;
+    public String toString(){
+        return "Request #" + id + " | Type: " + type + " | From: " + requester.getCustomerId() + " | Date: " + requestDate + (payload!=null? " | Payload:"+payload : "");
     }
 }
